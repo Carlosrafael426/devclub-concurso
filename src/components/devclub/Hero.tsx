@@ -1,6 +1,5 @@
 import { MessageSquare, Check } from 'lucide-react';
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
-import { HeroBackground } from './HeroBackground';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 type Token = { text: string; className?: string };
@@ -48,8 +47,9 @@ const AVATARS = [
 
 /**
  * Hero - Seção principal de destaque do DevClub.
- * Fundo em canvas com rede de nós reativa ao mouse, headline com typewriter
- * em loop e um mockup "editor + terminal" no lugar do antigo dashboard estático.
+ * O fundo animado (rede de nós reativa ao mouse) vem do NetworkBackground
+ * global montado em App.tsx. Aqui só o conteúdo: typewriter em loop e um
+ * mockup "editor + terminal" no lugar do antigo dashboard estático.
  */
 export const Hero: React.FC = () => {
   const { ref, isVisible } = useScrollAnimation(0.15);
@@ -124,7 +124,6 @@ export const Hero: React.FC = () => {
 
   return (
     <section id="hero" ref={ref} className={`relative min-h-screen pt-28 sm:pt-32 lg:pt-36 pb-14 sm:pb-18 flex items-center justify-center overflow-hidden fade-up ${isVisible ? 'visible' : ''}`}>
-      <HeroBackground />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-brand-bg pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-12 items-center relative z-10 w-full">

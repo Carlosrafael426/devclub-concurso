@@ -5,6 +5,7 @@ import { Alunos } from './components/devclub/Alunos';
 import { Equipe } from './components/devclub/Equipe';
 import { Empresas } from './components/devclub/Empresas';
 import { CTAFinal } from './components/devclub/CTAFinal';
+import { NetworkBackground } from './components/devclub/NetworkBackground';
 
 /**
  * App - Componente raiz do projeto.
@@ -13,6 +14,7 @@ import { CTAFinal } from './components/devclub/CTAFinal';
 function App() {
   return (
     <div className="relative min-h-screen bg-brand-bg selection:bg-brand-green/30 selection:text-brand-green">
+      <NetworkBackground />
       <Navbar />
 
       <main>
@@ -25,7 +27,7 @@ function App() {
 
       <CTAFinal />
 
-      <footer className="py-10 sm:py-12 border-t border-white/5 bg-brand-bg">
+      <footer className="relative z-10 py-10 sm:py-12 border-t border-white/5 bg-brand-bg/90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div className="flex items-center select-none">
             <svg className="w-8 h-8 drop-shadow-[0_0_8px_rgba(57, 211, 83, 0.2)]" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">

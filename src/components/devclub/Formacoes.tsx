@@ -1,9 +1,5 @@
 import { ArrowRight, Code, Server, Database, Globe, Layers, Cpu } from 'lucide-react';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
-import { AmbientNetwork, type Hue } from './AmbientNetwork';
-
-const NETWORK_HUES: Hue[] = ['green', 'purple'];
-
 /**
  * Formacoes - Apresenta os módulos/tecnologias ensinados na formação do DevClub.
  * Utiliza cards com hover premium, ícones da biblioteca Lucide e gradientes de destaque.
@@ -53,7 +49,6 @@ export const Formacoes: React.FC = () => {
 
   return (
     <section id="formacoes" className="relative py-20 sm:py-24 bg-brand-surface/50 border-t border-white/[0.03] overflow-hidden">
-      <AmbientNetwork density={16} speed={0.4} linkDistance={130} hues={NETWORK_HUES} nodeOpacity={0.55} linkOpacity={0.2} />
       <div className="absolute inset-0 bg-grid-pattern pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full purple-glow opacity-30 pointer-events-none" />
 
