@@ -8,46 +8,33 @@ const HUE_RGB: Record<Hue, string> = {
   purpleLight: '152, 75, 255',
 };
 
-/**
- * Zona = uma seção da página (por id do <section>). Cada zona tem sua
- * própria densidade/paleta, mas todas usam o mesmo motor visual (nós +
- * linhas) — são "eco" umas das outras, nunca elementos soltos.
- */
-interface ZoneConfig {
-  sectionId: string;
-  density: number;
-  hues: Hue[];
-  linkDistance: number;
-  nodeOpacity: number;
-  linkOpacity: number;
-}
+const HUES: Hue[] = ['green', 'purple', 'purpleLight'];
 
-const ZONES: ZoneConfig[] = [
-  { sectionId: 'hero', density: 46, hues: ['green', 'purple', 'purpleLight'], linkDistance: 150, nodeOpacity: 0.9, linkOpacity: 0.35 },
-  { sectionId: 'formacoes', density: 16, hues: ['green', 'purple'], linkDistance: 130, nodeOpacity: 0.55, linkOpacity: 0.2 },
-  { sectionId: 'alunos', density: 10, hues: ['green'], linkDistance: 110, nodeOpacity: 0.45, linkOpacity: 0.16 },
-  { sectionId: 'empresas', density: 12, hues: ['purple', 'purpleLight'], linkDistance: 120, nodeOpacity: 0.5, linkOpacity: 0.18 },
-  { sectionId: 'equipe', density: 12, hues: ['green', 'purpleLight'], linkDistance: 130, nodeOpacity: 0.5, linkOpacity: 0.18 },
-  { sectionId: 'inscricao', density: 20, hues: ['green', 'purple', 'purpleLight'], linkDistance: 150, nodeOpacity: 0.65, linkOpacity: 0.26 },
-];
+// Mesmos parâmetros do HeroBackground original: 46 nós para a área de uma
+// tela (viewport), linhas até 150px de distância, opacidades 0.9/0.35.
+// Aplicados uniformemente na página inteira — nada de densidade "eco" por
+// seção, é literalmente o mesmo padrão do Hero do início ao fim.
+const HERO_DENSITY = 46;
+const LINK_DISTANCE = 150;
+const NODE_OPACITY = 0.9;
+const LINK_OPACITY = 0.35;
 
 interface NetworkNode {
   x: number;
   y: number;
   radius: number;
   hue: Hue;
-  linkDistance: number;
-  nodeOpacity: number;
-  linkOpacity: number;
 }
 
 /**
  * NetworkBackground
- * Rede de nós conectados por linhas cobrindo a página inteira — desenho
- * ESTÁTICO (sem requestAnimationFrame, sem movimento, sem interação de
- * mouse): renderiza uma vez e só refaz o desenho quando o layout muda de
- * verdade (resize da janela, fontes carregando, conteúdo mudando de
- * altura). Um único <canvas>, montado uma vez em App.tsx atrás de tudo.
+ * Rede de nós conectados por linhas cobrindo a página inteira, com o mesmo
+ * padrão visual (densidade, cores, distância de conexão) do background
+ * original do Hero — não uma versão diluída por seção. Desenho ESTÁTICO
+ * (sem requestAnimationFrame, sem movimento, sem mouse): renderiza uma vez
+ * e só refaz quando o layout muda de verdade (resize, fontes carregando,
+ * conteúdo mudando de altura). Um único <canvas>, montado uma vez em
+ * App.tsx atrás de tudo.
  */
 export const NetworkBackground: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -64,44 +51,19 @@ export const NetworkBackground: FC = () => {
     let width = 0;
     let height = 0;
 
-    const isMobile = () => width < 640;
-
-    const measureZones = () => {
-      const scrollY = window.scrollY;
-      return ZONES.map((zone) => {
-        const el = document.getElementById(zone.sectionId);
-        if (!el) return null;
-        const rect = el.getBoundingClientRect();
-        return {
-          zone,
-          top: rect.top + scrollY,
-          height: rect.height,
-        };
-      }).filter((entry): entry is { zone: ZoneConfig; top: number; height: number } => !!entry && entry.height > 0);
-    };
-
     const createNodes = (): NetworkNode[] => {
-      const measured = measureZones();
-      const mobile = isMobile();
-      const nodes: NetworkNode[] = [];
+      const mobile = width < 640;
+      // Quantas "alturas de viewport" cabem no documento inteiro — mantém
+      // a mesma densidade por área do Hero em vez de um total fixo.
+      const heightRatio = height / Math.max(window.innerHeight, 1);
+      const count = Math.max(30, Math.round(HERO_DENSITY * heightRatio * (mobile ? 0.5 : 1)));
 
-      for (const { zone, top, height: zoneHeight } of measured) {
-        const count = Math.max(4, Math.round(zone.density * (mobile ? 0.5 : 1)));
-
-        for (let i = 0; i < count; i += 1) {
-          nodes.push({
-            x: Math.random() * width,
-            y: top + Math.random() * zoneHeight,
-            radius: Math.random() * 1.6 + 1,
-            hue: zone.hues[Math.floor(Math.random() * zone.hues.length)],
-            linkDistance: zone.linkDistance,
-            nodeOpacity: zone.nodeOpacity,
-            linkOpacity: zone.linkOpacity,
-          });
-        }
-      }
-
-      return nodes;
+      return Array.from({ length: count }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 1.6 + 1,
+        hue: HUES[Math.floor(Math.random() * HUES.length)],
+      }));
     };
 
     const drawStatic = (nodes: NetworkNode[]) => {
@@ -114,9 +76,8 @@ export const NetworkBackground: FC = () => {
           const dx = a.x - b.x;
           const dy = a.y - b.y;
           const dist = Math.hypot(dx, dy);
-          const linkDistance = Math.min(a.linkDistance, b.linkDistance);
-          if (dist < linkDistance) {
-            const opacity = (1 - dist / linkDistance) * a.linkOpacity;
+          if (dist < LINK_DISTANCE) {
+            const opacity = (1 - dist / LINK_DISTANCE) * LINK_OPACITY;
             ctx.strokeStyle = `rgba(${HUE_RGB[a.hue]}, ${opacity.toFixed(3)})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -129,9 +90,9 @@ export const NetworkBackground: FC = () => {
 
       for (const node of nodes) {
         ctx.beginPath();
-        ctx.fillStyle = `rgba(${HUE_RGB[node.hue]}, ${node.nodeOpacity})`;
-        ctx.shadowColor = `rgba(${HUE_RGB[node.hue]}, ${(node.nodeOpacity * 0.7).toFixed(3)})`;
-        ctx.shadowBlur = 6;
+        ctx.fillStyle = `rgba(${HUE_RGB[node.hue]}, ${NODE_OPACITY})`;
+        ctx.shadowColor = `rgba(${HUE_RGB[node.hue]}, ${(NODE_OPACITY * 0.7).toFixed(3)})`;
+        ctx.shadowBlur = 8;
         ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
         ctx.fill();
       }
