@@ -111,7 +111,7 @@ export const Alunos: React.FC = () => {
                 <div className="min-w-0 flex-1">
                   <h4 className="font-display font-bold text-sm text-white">{depoimento.name}</h4>
                   <div className="flex flex-col text-xs text-slate-400 mt-0.5 break-words">
-                    <span className="text-rose-400 font-medium">{depoimento.oldJob}</span>
+                    <span className="text-brand-purple-light font-medium">{depoimento.oldJob}</span>
                     <span className="text-brand-green font-semibold mt-0.5">
                       {depoimento.newJob} @ {depoimento.company}
                     </span>

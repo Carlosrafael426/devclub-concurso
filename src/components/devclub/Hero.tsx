@@ -215,7 +215,7 @@ export const Hero: React.FC = () => {
               {/* Barra de título estilo editor de código */}
               <div className="flex items-center justify-between px-5 py-3 border-b border-white/5 bg-white/[0.02]">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-rose-400/70" />
+                  <span className="w-3 h-3 rounded-full bg-brand-purple/70" />
                   <span className="w-3 h-3 rounded-full bg-amber-400/70" />
                   <span className="w-3 h-3 rounded-full bg-brand-green/70" />
                 </div>

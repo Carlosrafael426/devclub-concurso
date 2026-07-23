@@ -86,7 +86,7 @@ export const Equipe: React.FC = () => {
                 <h3 className="font-display font-extrabold text-xl text-white">
                   {mentor.name}
                 </h3>
-                <span className="text-xs font-semibold text-rose-400 block mt-1 uppercase tracking-wider">
+                <span className="text-xs font-semibold text-brand-purple-light block mt-1 uppercase tracking-wider">
                   {mentor.role}
                 </span>
                 <div className="mx-auto mt-2 h-px w-16 bg-gradient-to-r from-transparent via-brand-green/70 to-transparent" />

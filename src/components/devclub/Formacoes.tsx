@@ -46,7 +46,7 @@ export const Formacoes: React.FC = () => {
     {
       title: "Preparação para o Mercado",
       description: "Simulação de entrevistas técnicas, otimização de perfil no LinkedIn, estruturação de portfólio de peso e desenvolvimento de habilidades comportamentais (Soft Skills).",
-      icon: <Cpu className="site-icon text-rose-400" size={24} />,
+      icon: <Cpu className="site-icon text-brand-purple" size={24} />,
       badge: "Módulo Especial"
     }
   ];
