@@ -49,7 +49,8 @@ export const Formacoes: React.FC = () => {
   ];
 
   return (
-    <section id="formacoes" className="relative py-20 sm:py-24 bg-[#181719]/50 border-t border-white/[0.03]">
+    <section id="formacoes" className="relative py-20 sm:py-24 bg-brand-surface/50 border-t border-white/[0.03] overflow-hidden">
+      <div className="absolute inset-0 bg-grid-pattern pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full purple-glow opacity-30 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

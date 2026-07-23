@@ -39,9 +39,9 @@ export const Equipe: React.FC = () => {
   ];
 
   return (
-    <section id="equipe" className="relative py-20 sm:py-24 bg-[#181719]/50 border-t border-white/[0.03]">
+    <section id="equipe" className="relative py-20 sm:py-24 bg-brand-surface/50 border-t border-white/[0.03]">
       {/* Glow de fundo */}
-      <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] rounded-full purple-glow opacity-25 pointer-events-none" />
+      <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] rounded-full green-glow opacity-25 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 

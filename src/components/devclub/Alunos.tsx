@@ -65,7 +65,7 @@ export const Alunos: React.FC = () => {
   }, [statsVisible]);
 
   return (
-    <section id="alunos" ref={sectionRef} className={`relative py-20 sm:py-24 bg-[#111012] fade-up ${sectionVisible ? 'visible' : ''}`}>
+    <section id="alunos" ref={sectionRef} className={`relative py-20 sm:py-24 bg-brand-bg fade-up ${sectionVisible ? 'visible' : ''}`}>
       {/* Luz difusa de fundo */}
       <div className="absolute bottom-10 right-10 w-[500px] h-[500px] rounded-full green-glow opacity-20 pointer-events-none" />
 

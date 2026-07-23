@@ -40,8 +40,8 @@ export const Empresas = () => {
   const { ref, isVisible } = useScrollAnimation(0.2);
 
   return (
-    <section id="empresas" className="relative py-20 sm:py-24 bg-[#111012] border-y border-white/[0.03] overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] rounded-full green-glow opacity-20 pointer-events-none" />
+    <section id="empresas" className="relative py-20 sm:py-24 bg-brand-surface-light border-y border-white/[0.03] overflow-hidden">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] rounded-full purple-glow opacity-20 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div ref={ref} className={`text-center max-w-3xl mx-auto mb-12 sm:mb-16 fade-up ${isVisible ? 'visible' : ''}`}>
@@ -61,8 +61,8 @@ export const Empresas = () => {
 
       {/* Carrossel infinito de logos, sem os limites do container para um efeito de sangria total */}
       <div className="marquee-wrapper relative overflow-hidden select-none">
-        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 z-10 bg-gradient-to-r from-[#111012] to-transparent pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 z-10 bg-gradient-to-l from-[#111012] to-transparent pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 z-10 bg-gradient-to-r from-brand-surface-light to-transparent pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 z-10 bg-gradient-to-l from-brand-surface-light to-transparent pointer-events-none" />
 
         <div className="flex gap-4 sm:gap-5 animate-marquee w-max">
           {EMPRESAS_DUPLICADAS.map((empresa, idx) => (
