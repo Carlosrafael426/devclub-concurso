@@ -188,7 +188,7 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
   }, [text, updateIntervalMs]);
 
   return (
-    <div className={`w-48 h-14 sm:w-60 sm:h-16 pointer-events-none ${className ?? ''}`.trim()}>
+    <div className={`relative w-64 h-20 sm:w-96 sm:h-28 pointer-events-none ${className ?? ''}`.trim()}>
       <canvas
         ref={canvasRef}
         className="absolute inset-0"
