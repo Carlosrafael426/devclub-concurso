@@ -1,6 +1,7 @@
 import { MessageSquare, Check } from 'lucide-react';
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { MatrixTextReveal } from './MatrixTextReveal';
 
 type Token = { text: string; className?: string };
 type CodeLine = Token[];
@@ -204,11 +205,12 @@ export const Hero: React.FC = () => {
         </div>
 
         <div className="lg:col-span-5 flex items-center justify-center lg:justify-end relative min-h-[380px]">
+          <MatrixTextReveal opacity={0.22} className="hidden sm:block" />
           <div
             ref={cardRef}
             onMouseMove={handleTilt}
             onMouseLeave={resetTilt}
-            className="relative w-full max-w-[500px] transition-transform duration-300 ease-out will-change-transform"
+            className="relative z-10 w-full max-w-[500px] transition-transform duration-300 ease-out will-change-transform"
           >
             <div className="rounded-xl border border-white/10 bg-[#181719]/90 backdrop-blur-xl shadow-[0_0_100px_rgba(57, 211, 83, 0.12)] overflow-hidden">
               {/* Barra de título estilo editor de código */}
