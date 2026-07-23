@@ -383,20 +383,36 @@ export const NetworkBackground: FC = () => {
     drawFrame(16);
 
     window.addEventListener('resize', resize);
+    window.addEventListener('load', resize);
     window.addEventListener('pointermove', handlePointerMove);
     document.documentElement.addEventListener('mouseleave', handlePointerLeaveDoc);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Recalcula zonas após o primeiro layout estabilizar (fontes/imagens
-    // podem alterar a altura das seções logo após o mount).
-    const settleTimeout = window.setTimeout(resize, 400);
+    // As fontes web (Aldrich/Albert Sans) podem trocar depois do primeiro
+    // layout e mudar a altura dos títulos — sem isso, o canvas ficava
+    // "travado" na altura medida antes da troca de fonte e parava de
+    // cobrir o fim da página.
+    document.fonts.ready.then(resize).catch(() => {});
+
+    // Reage a QUALQUER mudança de altura do documento (imagens carregando,
+    // conteúdo dinâmico, etc.), não só uma vez — evita o canvas ficar
+    // desatualizado depois do carregamento inicial.
+    let resizeRaf = 0;
+    const scheduleResize = () => {
+      window.cancelAnimationFrame(resizeRaf);
+      resizeRaf = window.requestAnimationFrame(resize);
+    };
+    const bodyObserver = new ResizeObserver(scheduleResize);
+    bodyObserver.observe(document.body);
 
     start();
 
     return () => {
       stop();
-      window.clearTimeout(settleTimeout);
+      window.cancelAnimationFrame(resizeRaf);
+      bodyObserver.disconnect();
       window.removeEventListener('resize', resize);
+      window.removeEventListener('load', resize);
       window.removeEventListener('pointermove', handlePointerMove);
       document.documentElement.removeEventListener('mouseleave', handlePointerLeaveDoc);
       document.removeEventListener('visibilitychange', handleVisibilityChange);

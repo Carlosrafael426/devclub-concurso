@@ -6,24 +6,27 @@ const CHARS = '01010101010101{}<>/;:=+*#$%ABCDXY';
 
 interface MatrixTextRevealProps {
   text?: string;
-  /** Opacidade final da camada inteira — mantenha baixa para não competir com o terminal na frente. */
+  /** Opacidade do badge — alta por padrão, já que é um elemento visível da página, não uma textura de fundo. */
   opacity?: number;
   /** Intervalo entre trocas de caractere, em ms. Maior = mais lento/mais leve. */
   updateIntervalMs?: number;
+  /** Classes de posicionamento (top/left/transform/z-index) aplicadas pelo componente-pai. */
   className?: string;
 }
 
 /**
  * MatrixTextReveal
- * Renderiza "DEVCLUB" como uma máscara: caracteres aleatórios (binário +
- * símbolos de código) são desenhados só dentro do contorno das letras
- * (canvas destination-in), preenchidos com o mesmo gradiente
- * verde → verde-claro → roxo usado no texto animado do H1 do Hero. Uma
- * camada de textura atrás do card do terminal, não um elemento principal.
+ * Badge flutuante com "DEVCLUB" formado por caracteres aleatórios (binário +
+ * símbolos de código) trocando dentro do contorno das letras (canvas
+ * destination-in), preenchido com o mesmo gradiente verde → verde-claro →
+ * roxo do texto animado do H1 do Hero. É um elemento visível de página
+ * (mesmo papel do chip "9 vagas hoje"), não uma camada de fundo — por isso
+ * tem tamanho fixo e opacidade alta; quem o usa só define a posição via
+ * className.
  */
 export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
   text = 'DEVCLUB',
-  opacity = 0.22,
+  opacity = 0.92,
   updateIntervalMs = 80,
   className,
 }) => {
@@ -99,7 +102,10 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = buildGradient();
+      ctx.shadowColor = colorGreen;
+      ctx.shadowBlur = 10;
       ctx.fillText(text, width / 2, height / 2);
+      ctx.shadowBlur = 0;
     };
 
     const drawNoiseFrame = () => {
@@ -109,6 +115,8 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = buildGradient();
+      ctx.shadowColor = colorGreen;
+      ctx.shadowBlur = 6;
 
       const cols = Math.ceil(box.w / CELL);
       const rows = Math.ceil(box.h / CELL);
@@ -121,6 +129,7 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
         }
       }
       ctx.globalAlpha = 1;
+      ctx.shadowBlur = 0;
 
       // Clipa o ruído para dentro do contorno exato das letras.
       ctx.globalCompositeOperation = 'destination-in';
@@ -179,11 +188,13 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
   }, [text, updateIntervalMs]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className={`absolute inset-0 pointer-events-none ${className ?? ''}`.trim()}
-      style={{ opacity }}
-      aria-hidden="true"
-    />
+    <div className={`w-48 h-14 sm:w-60 sm:h-16 pointer-events-none ${className ?? ''}`.trim()}>
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0"
+        style={{ opacity }}
+        aria-hidden="true"
+      />
+    </div>
   );
 };

@@ -205,13 +205,15 @@ export const Hero: React.FC = () => {
         </div>
 
         <div className="lg:col-span-5 flex items-center justify-center lg:justify-end relative min-h-[380px]">
-          <MatrixTextReveal opacity={0.22} className="hidden sm:block" />
           <div
             ref={cardRef}
             onMouseMove={handleTilt}
             onMouseLeave={resetTilt}
             className="relative z-10 w-full max-w-[500px] transition-transform duration-300 ease-out will-change-transform"
           >
+            <MatrixTextReveal
+              className="hidden sm:block absolute -top-11 left-1/2 -translate-x-1/2 z-20"
+            />
             <div className="rounded-xl border border-white/10 bg-[#181719]/90 backdrop-blur-xl shadow-[0_0_100px_rgba(57, 211, 83, 0.12)] overflow-hidden">
               {/* Barra de título estilo editor de código */}
               <div className="flex items-center justify-between px-5 py-3 border-b border-white/5 bg-white/[0.02]">
