@@ -1,0 +1,192 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Albert Sans', sans-serif;
+  --font-display: 'Aldrich', sans-serif;
+
+  --color-brand-bg: #111012;
+  --color-brand-surface: #181719;
+  --color-brand-surface-light: #1F1E20;
+
+  --color-brand-green: #39D353;
+  --color-brand-green-dark: #23A639;
+  --color-brand-green-darken: #0CAE53;
+  --color-brand-green-light: #5BF175;
+
+  --color-brand-purple: #8532F2;
+  --color-brand-purple-dark: #5300C2;
+  --color-brand-purple-light: #984BFF;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem; /* Altura da navbar fixa (80px) */
+  }
+  
+  body {
+    background-color: var(--color-brand-bg);
+    color: #F8FAFC;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+}
+
+/* ==============================
+   EFEITOS DE FUNDO
+   ============================== */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+.glass-panel {
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+  border: 1px solid rgba(255,255,255,0.09);
+  box-shadow: 0 18px 60px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.06);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.section-kicker {
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #39D353;
+  font-size: 0.75rem;
+}
+
+.purple-glow {
+  filter: blur(150px);
+  background: radial-gradient(circle, rgba(133, 50, 242, 0.18) 0%, rgba(0, 0, 0, 0) 70%);
+}
+
+.green-glow {
+  filter: blur(120px);
+  background: radial-gradient(circle, rgba(57, 211, 83, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+}
+
+/* ==============================
+   ROTAÇÃO DO SELO (badge)
+   ============================== */
+@keyframes rotate-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.animate-rotate-slow {
+  animation: rotate-slow 20s linear infinite;
+}
+
+/* ==============================
+   FADE-UP: Animações ao scroll
+   ============================== */
+
+/* Estado inicial: invisível e deslocado para baixo */
+.fade-up {
+  opacity: 0;
+  transform: translateY(40px) scale(0.985);
+  transition: 
+    opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1), 
+    transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Estado final: visível e na posição original */
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Delays escalonados para cards entrarem em cascata */
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 180ms; }
+.delay-300 { transition-delay: 260ms; }
+.delay-400 { transition-delay: 340ms; }
+.delay-500 { transition-delay: 420ms; }
+.delay-600 { transition-delay: 500ms; }
+
+/* ==============================
+   MARQUEE: Faixa infinita de logos
+   ============================== */
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee-scroll 40s linear infinite;
+}
+
+/* Pausa no hover para melhor leitura */
+.marquee-wrapper:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* ==============================
+   PARTÍCULAS FLUTUANTES (Hero)
+   ============================== */
+@keyframes particle-float {
+  0%, 100% { 
+    transform: translateY(0px) scale(1); 
+    opacity: 0.2; 
+  }
+  50% { 
+    transform: translateY(-20px) scale(1.2); 
+    opacity: 0.6; 
+  }
+}
+
+/* ==============================
+   CURSOR PISCANTE DO TYPEWRITER
+   ============================== */
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  width: 4px;
+  height: 0.8em;
+  background: #39D353;
+  margin-left: 6px;
+  vertical-align: middle;
+  border-radius: 2px;
+  animation: blink-cursor 0.9s step-end infinite;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.site-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.site-icon:hover {
+  color: #39D353;
+  transform: translateY(-1px);
+}
+
+.animate-fade-in {
+  animation: fade-in 0.45s ease-out forwards;
+}
+
+/* ==============================
+   CHIP FLUTUANTE (Hero)
+   ============================== */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}

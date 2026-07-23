@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npx oxlint *)",
+      "Bash(curl -sf http://localhost:5174)",
+      "Bash(cat /tmp/vite-dev.log)",
+      "Read(//tmp/**)",
+      "Bash(curl -sf http://localhost:5174 >/dev/null && echo \"SERVER ALIVE\" && tail -10 /tmp/vite-dev.log)",
+      "Bash(grep -n \"console\\\\|error\\\\|Error\" /tmp/vite-dev.log | tail -60)",
+      "Bash(tail -60 /tmp/vite-dev.log)",
+      "Bash(curl -sf http://localhost:5173)",
+      "Bash(powershell.exe -Command \"Get-Process node -ErrorAction SilentlyContinue | Select-Object Id,ProcessName,StartTime\")",
+      "Bash(tail -40 /tmp/vite-dev.log)",
+      "PowerShell(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.LocalPort -ge 5170 -and $_.LocalPort -le 5185 } | Select-Object LocalPort,OwningProcess | Sort-Object LocalPort -Unique)",
+      "Bash(powershell.exe -Command \"Start-Process chrome 'http://localhost:5173'\")",
+      "Bash(curl -s \"http://localhost:5173/src/index.css\")",
+      "Bash(sed -i 's/via-emerald-300 to-cyan-400/via-brand-green-light to-brand-purple/g' Alunos.tsx CTAFinal.tsx Empresas.tsx Equipe.tsx Formacoes.tsx Hero.tsx)",
+      "Bash(sed -i 's/via-emerald-300 to-cyan-400/via-brand-green-light to-brand-purple/g' components/devclub/Alunos.tsx components/devclub/CTAFinal.tsx components/devclub/Empresas.tsx components/devclub/Equipe.tsx components/devclub/Formacoes.tsx components/devclub/Hero.tsx)",
+      "Bash(sed -i 's/hover:text-cyan-400/hover:text-brand-purple-light/g' components/devclub/Equipe.tsx)",
+      "Bash(sed -i 's/text-violet-400/text-brand-purple-light/g' components/devclub/Formacoes.tsx components/devclub/Hero.tsx)",
+      "Bash(sed -i 's/text-cyan-400/text-brand-purple-light/g' components/devclub/Formacoes.tsx)"
+    ]
+  }
+}
