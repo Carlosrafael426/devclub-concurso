@@ -1,5 +1,8 @@
 import { Globe } from 'lucide-react';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { AmbientNetwork, type Hue } from './AmbientNetwork';
+
+const NETWORK_HUES: Hue[] = ['green', 'purpleLight'];
 
 /**
  * Equipe - Seção de mentores e time de suporte técnico do DevClub.
@@ -39,7 +42,8 @@ export const Equipe: React.FC = () => {
   ];
 
   return (
-    <section id="equipe" className="relative py-20 sm:py-24 bg-brand-surface/50 border-t border-white/[0.03]">
+    <section id="equipe" className="relative py-20 sm:py-24 bg-brand-surface/50 border-t border-white/[0.03] overflow-hidden">
+      <AmbientNetwork density={12} speed={0.35} linkDistance={130} hues={NETWORK_HUES} nodeOpacity={0.5} linkOpacity={0.18} />
       {/* Glow de fundo */}
       <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] rounded-full green-glow opacity-25 pointer-events-none" />
 

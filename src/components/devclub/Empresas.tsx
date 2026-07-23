@@ -1,4 +1,7 @@
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { AmbientNetwork, type Hue } from './AmbientNetwork';
+
+const NETWORK_HUES: Hue[] = ['purple', 'purpleLight'];
 
 /**
  * Empresas - Seção "Empresas que contratam nossos devs"
@@ -41,6 +44,7 @@ export const Empresas = () => {
 
   return (
     <section id="empresas" className="relative py-20 sm:py-24 bg-brand-surface-light border-y border-white/[0.03] overflow-hidden">
+      <AmbientNetwork density={12} speed={0.5} linkDistance={120} hues={NETWORK_HUES} nodeOpacity={0.5} linkOpacity={0.18} driftBias="horizontal" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] rounded-full purple-glow opacity-20 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

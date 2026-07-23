@@ -1,5 +1,8 @@
 import { Check } from 'lucide-react';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { AmbientNetwork, type Hue } from './AmbientNetwork';
+
+const NETWORK_HUES: Hue[] = ['green', 'purple', 'purpleLight'];
 
 /**
  * CTAFinal - Seção de chamada para ação final com fundo dramático
@@ -19,6 +22,7 @@ export const CTAFinal = () => {
 
   return (
     <section id="inscricao" className="relative pt-16 pb-10 overflow-hidden border-t border-white/[0.04] bg-brand-bg">
+      <AmbientNetwork density={20} speed={0.55} linkDistance={150} hues={NETWORK_HUES} nodeOpacity={0.65} linkOpacity={0.26} />
       {/* Fundo dramático com gradientes radiais sobrepostos */}
       <div className="absolute inset-0 bg-gradient-to-b from-brand-bg via-brand-purple-dark/10 to-brand-bg" />
       <div className="absolute inset-0 bg-grid-pattern opacity-15" />

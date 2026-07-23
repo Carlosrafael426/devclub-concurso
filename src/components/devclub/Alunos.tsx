@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { AmbientNetwork, type Hue } from './AmbientNetwork';
+
+const NETWORK_HUES: Hue[] = ['green'];
 
 /**
  * Alunos - Seção de depoimentos e histórias de sucesso (cases reais)
@@ -65,7 +68,8 @@ export const Alunos: React.FC = () => {
   }, [statsVisible]);
 
   return (
-    <section id="alunos" ref={sectionRef} className={`relative py-20 sm:py-24 bg-brand-bg fade-up ${sectionVisible ? 'visible' : ''}`}>
+    <section id="alunos" ref={sectionRef} className={`relative py-20 sm:py-24 bg-brand-bg overflow-hidden fade-up ${sectionVisible ? 'visible' : ''}`}>
+      <AmbientNetwork density={10} speed={0.3} linkDistance={110} hues={NETWORK_HUES} nodeOpacity={0.45} linkOpacity={0.16} />
       {/* Luz difusa de fundo */}
       <div className="absolute bottom-10 right-10 w-[500px] h-[500px] rounded-full green-glow opacity-20 pointer-events-none" />
 
