@@ -17,17 +17,17 @@ interface MatrixTextRevealProps {
 /**
  * MatrixTextReveal
  * Badge flutuante com "DEVCLUB" formado por caracteres aleatórios (binário +
- * símbolos de código) trocando dentro do contorno das letras (canvas
- * destination-in), preenchido com o mesmo gradiente verde → verde-claro →
- * roxo do texto animado do H1 do Hero. É um elemento visível de página
- * (mesmo papel do chip "9 vagas hoje"), não uma camada de fundo — por isso
- * tem tamanho fixo e opacidade alta; quem o usa só define a posição via
- * className.
+ * símbolos de código) que se acumulam dentro do contorno das letras (canvas
+ * destination-in sobre uma máscara em cache), preenchido com o mesmo
+ * gradiente verde → verde-claro → roxo do texto animado do H1 do Hero. Em
+ * vez de limpar o canvas a cada troca, usa um "rastro" (fillRect quase
+ * transparente) para o efeito clássico de chuva de código acumulando —
+ * mesma técnica do exemplo de referência do estilo Matrix.
  */
 export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
   text = 'DEVCLUB',
   opacity = 0.92,
-  updateIntervalMs = 80,
+  updateIntervalMs = 90,
   className,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -44,7 +44,10 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const CELL = 14;
+    const CELL = 11;
+    // Quanto do rastro anterior é apagado a cada troca — menor = mais
+    // "acúmulo"/glitch persistente, maior = mais limpo/imediato.
+    const TRAIL_FADE = 0.22;
 
     // Lê as cores direto dos tokens do @theme (index.css) em vez de
     // hardcodar hex novos — mesmo gradiente do "dev full stack" do H1.
@@ -52,6 +55,12 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
     const colorGreen = rootStyles.getPropertyValue('--color-brand-green').trim() || '#39D353';
     const colorGreenLight = rootStyles.getPropertyValue('--color-brand-green-light').trim() || '#5BF175';
     const colorPurple = rootStyles.getPropertyValue('--color-brand-purple').trim() || '#8532F2';
+
+    // Máscara em cache (offscreen): o contorno de "DEVCLUB" em branco
+    // sólido, redesenhado só quando o tamanho muda — não a cada troca de
+    // caractere.
+    const mask = document.createElement('canvas');
+    const mctx = mask.getContext('2d');
 
     let width = 0;
     let height = 0;
@@ -74,6 +83,18 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
         w: textWidth + CELL * 2,
         h: fontSize * 1.3,
       };
+
+      if (mctx) {
+        mask.width = canvas.width;
+        mask.height = canvas.height;
+        mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        mctx.clearRect(0, 0, width, height);
+        mctx.font = `bold ${fontSize}px "Aldrich", sans-serif`;
+        mctx.textAlign = 'center';
+        mctx.textBaseline = 'middle';
+        mctx.fillStyle = '#fff';
+        mctx.fillText(text, width / 2, height / 2);
+      }
     };
 
     const resize = () => {
@@ -109,32 +130,39 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
     };
 
     const drawNoiseFrame = () => {
-      ctx.clearRect(0, 0, width, height);
+      // Rastro: em vez de limpar tudo, apaga só uma fração — os
+      // caracteres da rodada anterior desbotam aos poucos em vez de
+      // sumirem de uma vez, dando o acúmulo típico do efeito Matrix.
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = `rgba(6, 6, 12, ${TRAIL_FADE})`;
+      ctx.fillRect(0, 0, width, height);
 
-      ctx.font = `bold ${fontSize}px "Aldrich", sans-serif`;
+      ctx.font = `bold ${CELL + 3}px monospace`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillStyle = buildGradient();
-      ctx.shadowColor = colorGreen;
-      ctx.shadowBlur = 6;
+      const gradient = buildGradient();
+      ctx.shadowBlur = 4;
 
       const cols = Math.ceil(box.w / CELL);
       const rows = Math.ceil(box.h / CELL);
       for (let row = 0; row < rows; row += 1) {
         for (let col = 0; col < cols; col += 1) {
-          if (Math.random() > 0.6) continue;
+          if (Math.random() > 0.55) continue;
           const char = CHARS[Math.floor(Math.random() * CHARS.length)];
-          ctx.globalAlpha = 0.35 + Math.random() * 0.55;
+          const isHighlight = Math.random() > 0.9;
+          ctx.fillStyle = isHighlight ? '#eafff2' : gradient;
+          ctx.shadowColor = isHighlight ? '#eafff2' : colorGreen;
+          ctx.globalAlpha = isHighlight ? 0.95 : 0.4 + Math.random() * 0.5;
           ctx.fillText(char, box.x + col * CELL + CELL / 2, box.y + row * CELL + CELL / 2);
         }
       }
       ctx.globalAlpha = 1;
       ctx.shadowBlur = 0;
 
-      // Clipa o ruído para dentro do contorno exato das letras.
+      // Clipa tudo (rastro + ruído novo) para dentro do contorno das
+      // letras, usando a máscara em cache em vez de redesenhar o texto.
       ctx.globalCompositeOperation = 'destination-in';
-      ctx.fillStyle = '#fff';
-      ctx.fillText(text, width / 2, height / 2);
+      ctx.drawImage(mask, 0, 0, width, height);
       ctx.globalCompositeOperation = 'source-over';
     };
 
