@@ -41,7 +41,7 @@ export function ScrollProgress() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-[60] h-[2px] pointer-events-none" aria-hidden="true">
-      <div ref={barRef} className="h-full w-full bg-brand-green origin-left" style={{ transform: 'scaleX(0)' }} />
+      <div ref={barRef} className="h-full w-full bg-green-normal origin-left" style={{ transform: 'scaleX(0)' }} />
     </div>
   );
 }

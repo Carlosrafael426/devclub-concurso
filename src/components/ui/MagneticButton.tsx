@@ -10,6 +10,7 @@ type MagneticButtonProps = {
   href: string;
   target?: string;
   rel?: string;
+  onClick?: () => void;
   radius?: number;
   strength?: number;
 };
@@ -20,7 +21,7 @@ type MagneticButtonProps = {
  * CTAs primários (Hero e CTA final) — magnetismo em todo botão vira ruído
  * e prejudica a previsibilidade da interface (P1).
  */
-export function MagneticButton({ children, className, href, target, rel, radius = 80, strength = 8 }: MagneticButtonProps) {
+export function MagneticButton({ children, className, href, target, rel, onClick, radius = 80, strength = 8 }: MagneticButtonProps) {
   const ref = useRef<HTMLAnchorElement | null>(null);
   const reducedMotion = useReducedMotion();
 
@@ -55,6 +56,7 @@ export function MagneticButton({ children, className, href, target, rel, radius 
       href={href}
       target={target}
       rel={rel}
+      onClick={onClick}
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
       className={className}

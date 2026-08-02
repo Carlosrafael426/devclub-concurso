@@ -1,9 +1,43 @@
 @import "tailwindcss";
+@import "./styles/tokens.css";
 
 @theme {
   --font-sans: 'Albert Sans', sans-serif;
   --font-display: 'Aldrich', sans-serif;
 
+  /* Espelho dos tokens oficiais (tokens.css) com o prefixo que o Tailwind
+     v4 exige para virar utility class — uma variável --color-* sem esse
+     prefixo existe como custom property comum, mas não gera nenhuma
+     classe `bg-*`/`text-*`/`border-*`. */
+  --color-black-dark: var(--black-dark);
+  --color-black-normal: var(--black-normal);
+  --color-black-light: var(--black-light);
+
+  --color-white-normal: var(--white-normal);
+  --color-white-light: var(--white-light);
+
+  --color-green-light: var(--green-light);
+  --color-green-normal: var(--green-normal);
+  --color-green-dark: var(--green-dark);
+  --color-green-darken: var(--green-darken);
+
+  --color-purple-light: var(--purple-light);
+  --color-purple-normal: var(--purple-normal);
+  --color-purple-dark: var(--purple-dark);
+
+  --color-gray-200: var(--gray-200);
+  --color-gray-300: var(--gray-300);
+  --color-gray-400: var(--gray-400);
+  --color-gray-500: var(--gray-500);
+  --color-gray-600: var(--gray-600);
+  --color-gray-700: var(--gray-700);
+
+  --radius-badge: 4px;
+  --radius-btn: 8px;
+  --radius-card: 16px;
+
+  /* --color-brand-*: tokens antigos, mantidos só até a varredura de
+     substituição terminar (Parte 1.7 os remove). */
   --color-brand-bg: #111012;
   --color-brand-surface: #181719;
   --color-brand-surface-light: #1F1E20;
@@ -25,8 +59,8 @@
   }
   
   body {
-    background-color: var(--color-brand-bg);
-    color: #F8FAFC;
+    background-color: var(--color-black-dark);
+    color: var(--color-white-light);
     font-family: var(--font-sans);
     overflow-x: hidden;
   }
@@ -50,22 +84,17 @@
   -webkit-backdrop-filter: blur(18px);
 }
 
-.section-kicker {
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  font-weight: 700;
-  color: #39D353;
-  font-size: 0.75rem;
-}
-
+/* Opacidades exatas da spec oficial: roxo .1, verde .2 — os usos em JSX não
+   devem mais empilhar uma classe opacity-* do Tailwind por cima (dobraria
+   a transparência). */
 .purple-glow {
   filter: blur(150px);
-  background: radial-gradient(circle, rgba(133, 50, 242, 0.18) 0%, rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(circle, rgba(133, 50, 242, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
 }
 
 .green-glow {
   filter: blur(120px);
-  background: radial-gradient(circle, rgba(57, 211, 83, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(circle, rgba(57, 211, 83, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
 }
 
 /* ==============================
@@ -100,7 +129,7 @@
   display: inline-block;
   width: 4px;
   height: 0.8em;
-  background: #39D353;
+  background: var(--color-green-normal);
   margin-left: 6px;
   vertical-align: middle;
   border-radius: 2px;
@@ -121,7 +150,7 @@
 }
 
 .site-icon:hover {
-  color: #39D353;
+  color: var(--color-green-normal);
   transform: translateY(-1px);
 }
 
@@ -142,6 +171,35 @@
 }
 
 /* ==============================
+   BOTÃO PRIMÁRIO: ripple radial no hover
+   Só transform (scale) + opacity animam — nunca width/height, que são
+   propriedades de layout e forçam reflow. O pseudo-elemento já nasce no
+   tamanho final; o "crescimento" é só escala partindo de 0.
+   ============================== */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 220%;
+  height: 220%;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18), transparent 70%);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 500ms ease, opacity 500ms ease;
+}
+.btn-primary:hover::before {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* ==============================
    NAVEGAÇÃO: indicador de seção ativa (Navbar, via ScrollTrigger.toggleClass)
    ============================== */
 .nav-link-active {
@@ -157,7 +215,7 @@
    sem substituto) — sinal de senioridade, não detalhe opcional.
    ============================== */
 :focus-visible {
-  outline: 2px solid var(--color-brand-green);
+  outline: 2px solid var(--color-green-normal);
   outline-offset: 3px;
   border-radius: 2px;
 }

@@ -11,10 +11,9 @@ type HeroRotatingWordProps = {
  * Palavra rotativa do H1 do Hero. Mantém o conceito de "múltiplas saídas de
  * carreira" da versão anterior, mas troca a digitação letra-a-letra + cursor
  * piscando (assinatura de IA) por uma transição de máscara via SplitText:
- * caracteres saem deslizando para cima e entram de baixo, com o gradiente
- * de marca aplicado por caractere (não pela palavra inteira, já que
- * `background-clip`/`color` não são herdados pelos spans que o SplitText
- * gera).
+ * caracteres saem deslizando para cima e entram de baixo. Cor sólida verde
+ * (não gradiente) por caractere — a marca não usa gradiente verde→roxo em
+ * texto, e no máximo um destaque verde por viewport.
  */
 export function HeroRotatingWord({ words }: HeroRotatingWordProps) {
   const wordHostRef = useRef<HTMLSpanElement | null>(null);
@@ -24,19 +23,14 @@ export function HeroRotatingWord({ words }: HeroRotatingWordProps) {
     const el = wordHostRef.current;
     if (!el) return;
 
-    const applyGradient = (target: Element) => {
-      const node = target as HTMLElement;
-      node.style.backgroundImage =
-        'linear-gradient(90deg, var(--color-brand-green), var(--color-brand-green-light), var(--color-brand-purple))';
-      node.style.backgroundClip = 'text';
-      node.style.webkitBackgroundClip = 'text';
-      node.style.color = 'transparent';
+    const applyColor = (target: Element) => {
+      (target as HTMLElement).style.color = 'var(--color-green-normal)';
     };
 
     const renderWord = (word: string, animateIn: boolean) => {
       el.textContent = word;
       const split = new SplitText(el, { type: 'chars' });
-      split.chars.forEach(applyGradient);
+      split.chars.forEach(applyColor);
       if (animateIn) {
         gsap.set(split.chars, { yPercent: 110, opacity: 0 });
         gsap.to(split.chars, {

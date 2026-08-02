@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
+import type { Ref } from 'react';
 import { Reveal } from '../ui/Reveal';
 import { Counter } from '../ui/Counter';
+import { Badge } from '../ui/Badge';
+import { Card } from '../ui/Card';
 import { DISTANCE, DURATION, EASE } from '../../lib/motion';
 import { gsap, ScrollTrigger } from '../../lib/gsap';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
@@ -77,18 +80,18 @@ export const Alunos: React.FC = () => {
   }, [reducedMotion]);
 
   return (
-    <section id="alunos" className="relative py-20 sm:py-24 bg-brand-bg/85 overflow-hidden">
+    <section id="alunos" className="relative py-20 sm:py-24 bg-black-dark/85 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* Título da Seção */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <Reveal as="span" y={DISTANCE.sm} className="block font-sans font-bold text-[11px] sm:text-xs tracking-widest text-brand-green uppercase">
-            HISTÓRIAS DE SUCESSO
+          <Reveal as="div" y={DISTANCE.sm} className="flex justify-center">
+            <Badge>histórias de sucesso_</Badge>
           </Reveal>
-          <Reveal as="h2" split="words" delay={0.1} className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white mt-3">
+          <Reveal as="h2" split="words" delay={0.1} className="font-display font-normal text-3xl sm:text-4xl md:text-5xl text-white mt-3">
             Quem vivenciou o método <br /> na prática
           </Reveal>
-          <Reveal as="p" y={DISTANCE.sm} delay={0.25} className="font-sans text-slate-400 mt-4 text-base sm:text-lg">
+          <Reveal as="p" y={DISTANCE.sm} delay={0.25} className="font-sans font-medium text-gray-300 mt-4 text-base sm:text-lg">
             Veja a transformação de pessoas que começaram do zero absoluto e hoje constroem carreiras consolidadas nas maiores empresas de tecnologia do país.
           </Reveal>
         </div>
@@ -120,14 +123,14 @@ export const Alunos: React.FC = () => {
                 </div>
 
                 <div className={`flex flex-col gap-6 ${flip ? 'lg:order-1' : ''}`}>
-                  <p className="font-sans text-lg sm:text-xl text-slate-300 italic leading-relaxed">
+                  <p className="font-sans font-medium text-lg sm:text-xl text-gray-300 italic leading-relaxed">
                     {depoimento.quote}
                   </p>
                   <div>
-                    <h4 className="font-display font-bold text-base text-white">{depoimento.name}</h4>
-                    <div className="flex flex-col text-sm text-slate-400 mt-1">
-                      <span className="text-brand-purple-light font-medium">{depoimento.oldJob}</span>
-                      <span className="text-brand-green font-semibold mt-0.5">
+                    <h4 className="font-display font-normal text-base text-white">{depoimento.name}</h4>
+                    <div className="flex flex-col text-sm text-gray-300 mt-1">
+                      <span className="text-purple-light font-medium">{depoimento.oldJob}</span>
+                      <span className="text-green-normal font-semibold mt-0.5">
                         {depoimento.newJob} @ {depoimento.company}
                       </span>
                     </div>
@@ -138,22 +141,26 @@ export const Alunos: React.FC = () => {
           })}
         </div>
 
-        <div ref={statsRef} className="mt-12 sm:mt-20 p-6 sm:p-8 rounded-xl glass-panel flex flex-col md:flex-row justify-around items-center gap-6 sm:gap-8 text-center md:text-left">
+        <Card
+          ref={statsRef as Ref<HTMLElement>}
+          hoverable={false}
+          className="mt-12 sm:mt-20 flex flex-col md:flex-row justify-around items-center gap-6 sm:gap-8 text-center md:text-left"
+        >
           <div>
-            <Counter value={92} suffix="%" className="font-display font-extrabold text-3xl sm:text-4xl text-white" />
-            <p className="font-sans text-[10px] sm:text-xs text-slate-400 uppercase tracking-widest mt-1">Taxa de Empregabilidade</p>
+            <Counter value={92} suffix="%" className="font-display font-normal text-3xl sm:text-4xl text-white" />
+            <p className="font-sans text-[10px] sm:text-xs text-gray-300 uppercase tracking-widest mt-1">Taxa de Empregabilidade</p>
           </div>
           <div className="w-px h-12 bg-white/[0.08] hidden md:block" />
           <div>
-            <Counter value={4200} prefix="R$ " className="font-display font-extrabold text-3xl sm:text-4xl text-white" />
-            <p className="font-sans text-[10px] sm:text-xs text-slate-400 uppercase tracking-widest mt-1">Média salarial de contratação</p>
+            <Counter value={4200} prefix="R$ " className="font-display font-normal text-3xl sm:text-4xl text-white" />
+            <p className="font-sans text-[10px] sm:text-xs text-gray-300 uppercase tracking-widest mt-1">Média salarial de contratação</p>
           </div>
           <div className="w-px h-12 bg-white/[0.08] hidden md:block" />
           <div>
-            <Counter value={2500} suffix="+" className="font-display font-extrabold text-3xl sm:text-4xl text-white" />
-            <p className="font-sans text-[10px] sm:text-xs text-slate-400 uppercase tracking-widest mt-1">Vagas preenchidas por alunos</p>
+            <Counter value={2500} suffix="+" className="font-display font-normal text-3xl sm:text-4xl text-white" />
+            <p className="font-sans text-[10px] sm:text-xs text-gray-300 uppercase tracking-widest mt-1">Vagas preenchidas por alunos</p>
           </div>
-        </div>
+        </Card>
       </div>
     </section>
   );

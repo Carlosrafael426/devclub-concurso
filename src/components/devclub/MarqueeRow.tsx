@@ -84,8 +84,8 @@ export function MarqueeRow({ id, items, direction, hovered, onHover }: MarqueeRo
       onMouseEnter={handleRowEnter}
       onMouseLeave={handleRowLeave}
     >
-      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 z-10 bg-gradient-to-r from-brand-surface-light to-transparent pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 z-10 bg-gradient-to-l from-brand-surface-light to-transparent pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 z-10 bg-gradient-to-r from-black-light to-transparent pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 z-10 bg-gradient-to-l from-black-light to-transparent pointer-events-none" />
 
       <div ref={rowRef} className="flex gap-4 sm:gap-5 w-max">
         {items.map((empresa, idx) => {
@@ -101,7 +101,7 @@ export function MarqueeRow({ id, items, direction, hovered, onHover }: MarqueeRo
               }`}
             >
               <div
-                className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg flex items-center justify-center font-display font-extrabold text-base sm:text-lg"
+                className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg flex items-center justify-center font-display font-normal text-base sm:text-lg"
                 style={{
                   backgroundColor: `${empresa.cor}1A`,
                   color: empresa.cor,
@@ -111,7 +111,7 @@ export function MarqueeRow({ id, items, direction, hovered, onHover }: MarqueeRo
               >
                 {empresa.monograma}
               </div>
-              <span className="text-xs sm:text-sm font-medium text-slate-300 text-center whitespace-nowrap">
+              <span className="text-xs sm:text-sm font-medium text-gray-300 text-center whitespace-nowrap">
                 {empresa.nome}
               </span>
             </div>

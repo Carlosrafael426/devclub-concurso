@@ -1,0 +1,42 @@
+/**
+ * Tokens de identidade visual oficiais do DevClub, extraídos literalmente
+ * das CSS custom properties de devclub.com.br. Ficam crus aqui (sem
+ * prefixo Tailwind) para servir de fonte única de verdade; o @theme em
+ * index.css espelha os que precisam virar utility class.
+ */
+:root {
+  /* Neutros escuros */
+  --black-dark:    #111012;  /* fundo da página */
+  --black-normal:  #181719;  /* superfícies / cards */
+  --black-light:   #1F1E20;  /* superfícies elevadas */
+
+  /* Brancos */
+  --white-normal:  #FBF5FF;
+  --white-light:   #FFFFFF;
+
+  /* Verde — primária */
+  --green-light:   #5BF175;
+  --green-normal:  #39D353;  /* ação e destaque */
+  --green-dark:    #23A639;  /* borda de botão e hover */
+  --green-darken:  #0CAE53;
+
+  /* Roxo — acento */
+  --purple-light:  #984BFF;
+  --purple-normal: #8532F2;
+  --purple-dark:   #5300C2;
+
+  /* Cinzas — texto */
+  --gray-200: #C8CACC;
+  --gray-300: #AAAEB3;  /* cor padrão de parágrafo */
+  --gray-400: #91959A;
+  --gray-500: #777C81;
+  --gray-600: #5E6368;
+  --gray-700: #202227;
+
+  /* Gradientes oficiais */
+  --gradient-green:      linear-gradient(90deg, #49EB64 0%, #148527 100%);
+  --gradient-purple:     linear-gradient(270deg, #8C35FF 0%, #5300C2 100%);
+  --gradient-purple-bg:  linear-gradient(270deg, rgba(152,75,255,.2) 0%, rgba(82,23,160,.2) 100%);
+  --gradient-green-bg:   linear-gradient(90deg, rgba(124,254,146,.2) 0%, rgba(53,139,67,.14) 100%);
+  --gradient-green-card: linear-gradient(194.21deg, #49EB64 -20.6%, #148527 62.48%);
+}

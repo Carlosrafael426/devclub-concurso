@@ -30,7 +30,7 @@ function App() {
   }, [reducedMotion]);
 
   return (
-    <div className="relative min-h-screen bg-brand-bg selection:bg-brand-green/30 selection:text-brand-green">
+    <div className="relative min-h-screen bg-black-dark selection:bg-green-normal/30 selection:text-green-normal">
       <Preloader />
       <NetworkBackground />
       <ScrollProgress />
@@ -47,7 +47,7 @@ function App() {
 
       <CTAFinal />
 
-      <footer className="relative z-10 py-10 sm:py-12 border-t border-white/5 bg-brand-bg/90">
+      <footer className="relative z-10 py-10 sm:py-12 border-t border-white/5 bg-black-dark/90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div className="flex items-center select-none">
             <svg className="w-8 h-8 drop-shadow-[0_0_8px_rgba(57, 211, 83, 0.2)]" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,7 +71,7 @@ function App() {
               <rect x="29.5" y="32.5" width="5" height="5" rx="1" fill="#39D353" />
             </svg>
           </div>
-          <span className="font-sans text-sm text-slate-400">
+          <span className="font-sans text-sm text-gray-300">
             &copy; {new Date().getFullYear()} DevClub. Todos os direitos reservados.
           </span>
           <div className="flex flex-col items-center md:items-end gap-2">
@@ -80,7 +80,7 @@ function App() {
                 href="https://www.youtube.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="site-icon flex h-9 w-9 items-center justify-center text-slate-400 transition-all hover:-translate-y-0.5 hover:text-brand-green"
+                className="site-icon flex h-9 w-9 items-center justify-center text-gray-300 transition-all hover:-translate-y-0.5 hover:text-green-normal"
                 aria-label="YouTube"
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
@@ -91,7 +91,7 @@ function App() {
                 href="https://www.instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="site-icon flex h-9 w-9 items-center justify-center text-slate-400 transition-all hover:-translate-y-0.5 hover:text-brand-green"
+                className="site-icon flex h-9 w-9 items-center justify-center text-gray-300 transition-all hover:-translate-y-0.5 hover:text-green-normal"
                 aria-label="Instagram"
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
@@ -102,7 +102,7 @@ function App() {
                 href="https://www.linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="site-icon flex h-9 w-9 items-center justify-center text-slate-400 transition-all hover:-translate-y-0.5 hover:text-brand-green"
+                className="site-icon flex h-9 w-9 items-center justify-center text-gray-300 transition-all hover:-translate-y-0.5 hover:text-green-normal"
                 aria-label="LinkedIn"
               >
                 <span className="text-base font-semibold tracking-[-0.08em]" aria-hidden="true">
@@ -110,9 +110,9 @@ function App() {
                 </span>
               </a>
             </div>
-            <div className="flex items-center gap-6 font-sans text-sm text-slate-400">
-              <a href="#termos" className="hover:text-slate-300 transition-colors">Termos de Uso</a>
-              <a href="#privacidade" className="hover:text-slate-300 transition-colors">Privacidade</a>
+            <div className="flex items-center gap-6 font-sans text-sm text-gray-300">
+              <a href="#termos" className="hover:text-white transition-colors">Termos de Uso</a>
+              <a href="#privacidade" className="hover:text-white transition-colors">Privacidade</a>
             </div>
           </div>
         </div>

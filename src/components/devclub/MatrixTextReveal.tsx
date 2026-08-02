@@ -18,9 +18,10 @@ interface MatrixTextRevealProps {
  * MatrixTextReveal
  * Badge flutuante com "DEVCLUB" formado por caracteres aleatórios (binário +
  * símbolos de código) que se acumulam dentro do contorno das letras (canvas
- * destination-in sobre uma máscara em cache), preenchido com o mesmo
- * gradiente verde → verde-claro → roxo do texto animado do H1 do Hero. Em
- * vez de limpar o canvas a cada troca, usa um "rastro" (fillRect quase
+ * destination-in sobre uma máscara em cache), em verde sólido (token
+ * --color-green-normal) — sem gradiente, a marca reserva o roxo para
+ * acento/contexto, nunca dividindo o mesmo texto com o verde. Em vez de
+ * limpar o canvas a cada troca, usa um "rastro" (fillRect quase
  * transparente) para o efeito clássico de chuva de código acumulando —
  * mesma técnica do exemplo de referência do estilo Matrix.
  */
@@ -49,12 +50,11 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
     // "acúmulo"/glitch persistente, maior = mais limpo/imediato.
     const TRAIL_FADE = 0.22;
 
-    // Lê as cores direto dos tokens do @theme (index.css) em vez de
-    // hardcodar hex novos — mesmo gradiente do "dev full stack" do H1.
+    // Lê a cor direto do token do @theme (index.css) em vez de hardcodar
+    // hex novo. Verde sólido, não gradiente — a marca não usa gradiente
+    // verde→roxo em texto, e no máximo um destaque verde por viewport.
     const rootStyles = getComputedStyle(document.documentElement);
-    const colorGreen = rootStyles.getPropertyValue('--color-brand-green').trim() || '#39D353';
-    const colorGreenLight = rootStyles.getPropertyValue('--color-brand-green-light').trim() || '#5BF175';
-    const colorPurple = rootStyles.getPropertyValue('--color-brand-purple').trim() || '#8532F2';
+    const colorGreen = rootStyles.getPropertyValue('--color-green-normal').trim() || '#39D353';
 
     // Máscara em cache (offscreen): o contorno de "DEVCLUB" em branco
     // sólido, redesenhado só quando o tamanho muda — não a cada troca de
@@ -70,12 +70,12 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
     let isRunning = false;
 
     const fitText = () => {
-      ctx.font = `bold 100px "Aldrich", sans-serif`;
+      ctx.font = `100px "Aldrich", sans-serif`;
       const measured = ctx.measureText(text).width || 1;
       const target = width * 0.82;
       fontSize = Math.max(26, Math.min(150, 100 * (target / measured)));
 
-      ctx.font = `bold ${fontSize}px "Aldrich", sans-serif`;
+      ctx.font = `${fontSize}px "Aldrich", sans-serif`;
       const textWidth = ctx.measureText(text).width;
       box = {
         x: (width - textWidth) / 2 - CELL,
@@ -89,7 +89,7 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
         mask.height = canvas.height;
         mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         mctx.clearRect(0, 0, width, height);
-        mctx.font = `bold ${fontSize}px "Aldrich", sans-serif`;
+        mctx.font = `${fontSize}px "Aldrich", sans-serif`;
         mctx.textAlign = 'center';
         mctx.textBaseline = 'middle';
         mctx.fillStyle = '#fff';
@@ -109,20 +109,12 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
       fitText();
     };
 
-    const buildGradient = () => {
-      const gradient = ctx.createLinearGradient(box.x, 0, box.x + box.w, 0);
-      gradient.addColorStop(0, colorGreen);
-      gradient.addColorStop(0.5, colorGreenLight);
-      gradient.addColorStop(1, colorPurple);
-      return gradient;
-    };
-
     const drawStaticText = () => {
       ctx.clearRect(0, 0, width, height);
-      ctx.font = `bold ${fontSize}px "Aldrich", sans-serif`;
+      ctx.font = `${fontSize}px "Aldrich", sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillStyle = buildGradient();
+      ctx.fillStyle = colorGreen;
       ctx.shadowColor = colorGreen;
       ctx.shadowBlur = 10;
       ctx.fillText(text, width / 2, height / 2);
@@ -140,7 +132,6 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
       ctx.font = `bold ${CELL + 3}px monospace`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      const gradient = buildGradient();
       ctx.shadowBlur = 4;
 
       const cols = Math.ceil(box.w / CELL);
@@ -150,7 +141,7 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
           if (Math.random() > 0.55) continue;
           const char = CHARS[Math.floor(Math.random() * CHARS.length)];
           const isHighlight = Math.random() > 0.9;
-          ctx.fillStyle = isHighlight ? '#eafff2' : gradient;
+          ctx.fillStyle = isHighlight ? '#eafff2' : colorGreen;
           ctx.shadowColor = isHighlight ? '#eafff2' : colorGreen;
           ctx.globalAlpha = isHighlight ? 0.95 : 0.4 + Math.random() * 0.5;
           ctx.fillText(char, box.x + col * CELL + CELL / 2, box.y + row * CELL + CELL / 2);

@@ -3,6 +3,7 @@ import { Menu, X } from 'lucide-react';
 import { gsap, ScrollTrigger } from '../../lib/gsap';
 import { EASE } from '../../lib/motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { ButtonPrimary } from '../ui/ButtonPrimary';
 
 const NAV_SECTIONS = [
   { id: 'formacoes', label: 'Formações' },
@@ -63,7 +64,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50">
-      <div ref={bgRef} className="absolute inset-0 border-b border-white/[0.05] bg-[#111012]/90 backdrop-blur-md opacity-0" />
+      <div ref={bgRef} className="absolute inset-0 border-b border-[rgba(218,255,245,0.2)] bg-[rgba(218,255,245,0.05)] backdrop-blur-md opacity-0" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
 
         {/* Logo DevClub (Apenas o Ícone estilo QR-Code Verde com link para o topo/hero) */}
@@ -104,7 +105,7 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Menu Desktop */}
-        <div className="hidden md:flex items-center gap-8 font-sans font-medium text-sm text-slate-300">
+        <div className="hidden md:flex items-center gap-8 font-sans font-medium text-sm text-gray-300">
           {NAV_SECTIONS.map((section, idx) => (
             <a
               key={section.id}
@@ -112,30 +113,24 @@ export const Navbar: React.FC = () => {
                 linkRefs.current[idx] = el;
               }}
               href={`#${section.id}`}
-              className="relative py-1 hover:text-white transition-colors duration-200 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-green hover:after:w-full after:transition-all after:duration-[600ms]"
+              className="relative py-1 hover:text-green-normal transition-colors duration-200 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-green-normal hover:after:w-full after:transition-all after:duration-[600ms]"
             >
               {section.label}
             </a>
           ))}
         </div>
 
-        {/* Botão de Ação Desktop — group + contra-escala para crescer o botão sem aumentar as letras */}
+        {/* Botão de Ação Desktop */}
         <div className="hidden md:flex items-center">
-          <a
-            href="#inscricao"
-            className="group flex items-center px-6 py-2.5 rounded-lg bg-brand-green text-[#111012] font-display font-bold text-sm tracking-wide shadow-[0_6px_24px_rgba(57, 211, 83, 0.28)] hover:shadow-[0_10px_36px_rgba(57, 211, 83, 0.5)] hover:scale-105 transition-all duration-300 cursor-pointer"
-          >
-            {/* Span interno com escala inversa (1/1.05 ≈ 0.952) para manter o texto no tamanho original */}
-            <span className="inline-flex items-center gap-2 group-hover:scale-[0.952] transition-transform duration-300">
-              Quero ser dev
-            </span>
-          </a>
+          <ButtonPrimary href="#inscricao" magnetic={false}>
+            Quero ser dev
+          </ButtonPrimary>
         </div>
 
         {/* Hambúrguer Menu Mobile */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
+          className="md:hidden p-2 text-gray-300 hover:text-white transition-colors"
           aria-label="Toggle Menu"
         >
           {isOpen ? <X size={24} className="site-icon" /> : <Menu size={24} className="site-icon" />}
@@ -144,35 +139,31 @@ export const Navbar: React.FC = () => {
 
       {/* Menu Dropdown Mobile */}
       {isOpen && (
-        <div className="md:hidden absolute left-0 right-0 top-full bg-[#111012]/95 border-b border-white/[0.05] backdrop-blur-lg flex flex-col py-6 px-6 sm:px-8 gap-6 shadow-2xl animate-fade-in">
+        <div className="md:hidden absolute left-0 right-0 top-full bg-black-normal/95 border-b border-[rgba(218,255,245,0.2)] backdrop-blur-lg flex flex-col py-6 px-6 sm:px-8 gap-6 shadow-2xl animate-fade-in">
           <a
             href="#formacoes"
             onClick={() => setIsOpen(false)}
-            className="font-sans font-medium text-lg text-slate-300 hover:text-white transition-colors"
+            className="font-sans font-medium text-lg text-gray-300 hover:text-green-normal transition-colors"
           >
             Formações
           </a>
           <a
             href="#alunos"
             onClick={() => setIsOpen(false)}
-            className="font-sans font-medium text-lg text-slate-300 hover:text-white transition-colors"
+            className="font-sans font-medium text-lg text-gray-300 hover:text-green-normal transition-colors"
           >
             Alunos
           </a>
           <a
             href="#equipe"
             onClick={() => setIsOpen(false)}
-            className="font-sans font-medium text-lg text-slate-300 hover:text-white transition-colors"
+            className="font-sans font-medium text-lg text-gray-300 hover:text-green-normal transition-colors"
           >
             Equipe
           </a>
-          <a
-            href="#inscricao"
-            onClick={() => setIsOpen(false)}
-            className="flex items-center justify-center gap-2 py-3.5 rounded-lg bg-brand-green text-[#111012] font-display font-extrabold text-base tracking-wide shadow-[0_8px_28px_rgba(57, 211, 83, 0.3)]"
-          >
+          <ButtonPrimary href="#inscricao" magnetic={false} className="w-full justify-center" onClick={() => setIsOpen(false)}>
             Quero ser dev
-          </a>
+          </ButtonPrimary>
         </div>
       )}
     </nav>

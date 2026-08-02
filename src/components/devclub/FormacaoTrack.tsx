@@ -149,11 +149,11 @@ export function FormacaoTrack({ modulos }: FormacaoTrackProps) {
             usuário não sabe se está "preso", que é o erro clássico do
             scroll horizontal pinado. */}
         <div className="h-1 w-full bg-white/[0.06] rounded-full overflow-hidden mb-12">
-          <div ref={progressRef} className="h-full w-full bg-brand-green origin-left" />
+          <div ref={progressRef} className="h-full w-full bg-green-normal origin-left" />
         </div>
 
         <svg className="absolute left-0 top-[3.25rem] w-full h-px overflow-visible pointer-events-none" aria-hidden="true">
-          <line ref={lineRef} x1="0" y1="0" x2="100%" y2="0" stroke="#39D353" strokeOpacity={0.35} strokeWidth={2} />
+          <line ref={lineRef} x1="0" y1="0" x2="100%" y2="0" stroke="var(--color-green-normal)" strokeOpacity={0.35} strokeWidth={2} />
         </svg>
 
         <div ref={trackRef} data-cursor="track" className="flex gap-8 w-max pr-24">

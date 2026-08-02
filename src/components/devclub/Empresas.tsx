@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Reveal } from '../ui/Reveal';
+import { Badge } from '../ui/Badge';
 import { DISTANCE } from '../../lib/motion';
 import { MarqueeRow, type Empresa } from './MarqueeRow';
 /**
@@ -37,16 +38,16 @@ export const Empresas = () => {
   const [hovered, setHovered] = useState<string | null>(null);
 
   return (
-    <section id="empresas" className="relative py-20 sm:py-24 bg-brand-surface-light/85 border-y border-white/[0.03] overflow-hidden">
+    <section id="empresas" className="relative py-20 sm:py-24 bg-black-light/85 border-y border-white/[0.03] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <Reveal as="span" y={DISTANCE.sm} className="block font-sans font-bold text-[11px] sm:text-xs tracking-widest text-brand-green uppercase">
-            EMPRESAS PARCEIRAS
+          <Reveal as="div" y={DISTANCE.sm} className="flex justify-center">
+            <Badge>empresas parceiras_</Badge>
           </Reveal>
-          <Reveal as="h2" split="words" delay={0.1} className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white mt-3">
+          <Reveal as="h2" split="words" delay={0.1} className="font-display font-normal text-3xl sm:text-4xl md:text-5xl text-white mt-3">
             Empresas que contratam <br />nossos devs
           </Reveal>
-          <Reveal as="p" y={DISTANCE.sm} delay={0.25} className="font-sans text-slate-400 mt-4 text-base sm:text-lg">
+          <Reveal as="p" y={DISTANCE.sm} delay={0.25} className="font-sans font-medium text-gray-300 mt-4 text-base sm:text-lg">
             Nossos alunos já foram contratados por essas e outras grandes empresas de tecnologia do Brasil.
           </Reveal>
         </div>
