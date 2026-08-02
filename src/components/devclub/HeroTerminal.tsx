@@ -52,7 +52,7 @@ export function HeroTerminal() {
     <>
       <MatrixTextReveal className="hidden sm:block" />
       <TiltCard className="relative z-10 w-full max-w-[500px]">
-        <div className="rounded-xl border border-white/10 bg-black-normal/90 backdrop-blur-xl shadow-[0_0_100px_rgba(57, 211, 83, 0.12)] overflow-hidden">
+        <div className="rounded-card border border-white/10 bg-black-normal/90 backdrop-blur-xl shadow-[0_0_100px_rgba(57, 211, 83, 0.12)] overflow-hidden">
           {/* Barra de título estilo editor de código */}
           <div className="flex items-center justify-between px-5 py-3 border-b border-white/5 bg-white/[0.02]">
             <div className="flex items-center gap-2">

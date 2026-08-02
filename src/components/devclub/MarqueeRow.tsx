@@ -96,7 +96,7 @@ export function MarqueeRow({ id, items, direction, hovered, onHover }: MarqueeRo
             <div
               key={key}
               onMouseEnter={() => onHover(key)}
-              className={`flex flex-col items-center gap-3 flex-shrink-0 w-28 sm:w-32 px-4 py-6 rounded-xl glass-panel transition-all duration-200 ${
+              className={`flex flex-col items-center gap-3 flex-shrink-0 w-28 sm:w-32 px-4 py-6 rounded-card glass-panel transition-all duration-200 ${
                 isHovered ? 'scale-110 grayscale-0 opacity-100' : isDimmed ? 'grayscale opacity-40 scale-95' : 'grayscale-0 opacity-90'
               }`}
             >

@@ -42,7 +42,7 @@ export function FormacaoCard({ modulo, ref }: FormacaoCardProps) {
           <div className="p-3.5 rounded-lg bg-white/[0.05] group-hover:bg-green-normal/10 transition-colors border border-white/[0.06]">
             {modulo.icon}
           </div>
-          <span className="text-[11px] font-display font-normal tracking-wider text-gray-300 bg-white/[0.04] px-2.5 py-1 rounded-md uppercase">
+          <span className="text-[11px] font-display font-normal tracking-wider text-gray-300 bg-white/[0.04] px-2.5 py-1 rounded-badge uppercase">
             {modulo.badge}
           </span>
         </div>

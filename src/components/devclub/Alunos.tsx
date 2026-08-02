@@ -109,7 +109,7 @@ export const Alunos: React.FC = () => {
                 y={DISTANCE.md}
                 className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-14 items-center"
               >
-                <div className={`relative overflow-hidden rounded-xl aspect-[4/5] lg:aspect-[4/3] ${flip ? 'lg:order-2' : ''}`}>
+                <div className={`relative overflow-hidden rounded-card aspect-[4/5] lg:aspect-[4/3] ${flip ? 'lg:order-2' : ''}`}>
                   <img
                     ref={(el) => {
                       photoRefs.current[idx] = el;

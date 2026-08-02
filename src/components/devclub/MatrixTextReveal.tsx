@@ -55,6 +55,7 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
     // verde→roxo em texto, e no máximo um destaque verde por viewport.
     const rootStyles = getComputedStyle(document.documentElement);
     const colorGreen = rootStyles.getPropertyValue('--color-green-normal').trim() || '#39D353';
+    const colorHighlight = rootStyles.getPropertyValue('--color-white-light').trim() || '#FFFFFF';
 
     // Máscara em cache (offscreen): o contorno de "DEVCLUB" em branco
     // sólido, redesenhado só quando o tamanho muda — não a cada troca de
@@ -141,8 +142,8 @@ export const MatrixTextReveal: FC<MatrixTextRevealProps> = ({
           if (Math.random() > 0.55) continue;
           const char = CHARS[Math.floor(Math.random() * CHARS.length)];
           const isHighlight = Math.random() > 0.9;
-          ctx.fillStyle = isHighlight ? '#eafff2' : colorGreen;
-          ctx.shadowColor = isHighlight ? '#eafff2' : colorGreen;
+          ctx.fillStyle = isHighlight ? colorHighlight : colorGreen;
+          ctx.shadowColor = isHighlight ? colorHighlight : colorGreen;
           ctx.globalAlpha = isHighlight ? 0.95 : 0.4 + Math.random() * 0.5;
           ctx.fillText(char, box.x + col * CELL + CELL / 2, box.y + row * CELL + CELL / 2);
         }

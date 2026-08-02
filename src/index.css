@@ -130,7 +130,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #94a3b8;
+  color: var(--color-gray-400);
   transition: color 180ms ease, transform 180ms ease;
 }
 
@@ -203,7 +203,7 @@
    NAVEGAÇÃO: indicador de seção ativa (Navbar, via ScrollTrigger.toggleClass)
    ============================== */
 .nav-link-active {
-  color: #fff;
+  color: var(--color-white-light);
 }
 .nav-link-active::after {
   width: 100%;
