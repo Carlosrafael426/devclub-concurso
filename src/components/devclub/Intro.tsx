@@ -2,14 +2,23 @@ import { useLayoutEffect, useRef } from 'react';
 import { gsap, ScrollTrigger, SplitText } from '../../lib/gsap';
 import { EASE, STAGGER, DISTANCE } from '../../lib/motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { hasSeenIntro, INTRO_SESSION_KEY } from '../../lib/introSession';
 import { Logo } from '../ui/Logo';
 
-const SESSION_KEY = 'devclub:intro-seen';
 const MAX_FONT_WAIT_MS = 1500;
 
 /**
- * Intro cinematográfica: ao carregar, só o logo (módulos se montando em
- * ordem aleatória — materialização, não barra de progresso) e o wordmark
+ * Intro cinematográfica: roda uma única vez por sessão de aba (checado de
+ * forma síncrona, antes do primeiro paint, via `hasSeenIntro()` — nunca
+ * dentro de um efeito, que só resolveria depois do componente já ter
+ * montado tudo). Em visitas seguintes o componente nem monta: `return
+ * null` direto, sem flash de intro seguido de remoção abrupta. A flag é
+ * gravada no INÍCIO da Fase A, não no fim — um refresh no meio da
+ * animação não deve mostrá-la de novo, já que a intenção de exibi-la já
+ * foi cumprida.
+ *
+ * Ao carregar (primeira vez), só o logo (módulos se montando em ordem
+ * aleatória — materialização, não barra de progresso) e o wordmark
  * abaixo dele. Ao rolar, uma única camada de profundidade: o logo recua
  * (escala para baixo + blur, nunca para cima — "câmera atravessando"
  * seria enérgico mas desorientador) enquanto o site emerge por trás. Não
@@ -29,7 +38,12 @@ export function Intro() {
   const hintRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
-    if (reducedMotion) return;
+    // sessionStorage já resolve o replay mesmo se StrictMode montar/
+    // desmontar este efeito duas vezes em dev (a segunda leitura já
+    // encontra a flag gravada pela primeira, se a primeira chegou a
+    // rodar) — mas o cleanup abaixo (flag `cancelled` + kill manual)
+    // ainda cobre o caso de a Fase A ser interrompida no meio.
+    if (reducedMotion || hasSeenIntro()) return;
 
     const spacer = spacerRef.current;
     const intro = introRef.current;
@@ -46,15 +60,13 @@ export function Intro() {
     let cancelled = false;
 
     // Estado inicial escondido, aplicado de forma síncrona (useLayoutEffect,
-    // antes do primeiro paint) — independente de qual caminho (Fase A
-    // completa ou pulada via sessionStorage) vai revelar depois. Sem isto
-    // haveria um frame com tudo visível antes do gate de fontes resolver.
+    // antes do primeiro paint) — sem isto haveria um frame com tudo visível
+    // antes do gate de fontes resolver.
     gsap.set(rects, { scale: 0, opacity: 0, transformOrigin: 'center' });
     gsap.set(wordEl, { opacity: 0 });
     gsap.set(hintEl, { opacity: 0, y: DISTANCE.sm });
 
-    // Fase B roda em toda visita (com ou sem Fase A) — só o momento em que
-    // é criada muda. Uma única ScrollTrigger com scrub controla tudo.
+    // Fase B: uma única ScrollTrigger com scrub controla a transição.
     const setupPhaseB = () => {
       if (cancelled) return;
       const site = document.getElementById('site');
@@ -103,21 +115,13 @@ export function Intro() {
       ScrollTrigger.refresh();
     };
 
-    const showFinalLogoState = () => {
-      gsap.set(rects, { scale: 1, opacity: 1, clearProps: 'transform,opacity' });
-      gsap.set(wordEl, { opacity: 1 });
-      gsap.set(hintEl, { opacity: 1, y: 0 });
-    };
-
     const runPhaseA = () => {
       if (cancelled) return;
 
-      if (sessionStorage.getItem(SESSION_KEY) === '1') {
-        showFinalLogoState();
-        setupPhaseB();
-        return;
-      }
-
+      // Grava a flag AGORA — no início de verdade da Fase A, não no fim.
+      // Um refresh no meio da animação não deve repeti-la: a intenção de
+      // mostrá-la já foi cumprida no instante em que ela começou.
+      sessionStorage.setItem(INTRO_SESSION_KEY, '1');
       document.body.style.overflow = 'hidden';
 
       split = new SplitText(wordEl, { type: 'lines,chars', linesClass: 'line-mask' });
@@ -127,7 +131,6 @@ export function Intro() {
       const tl = gsap.timeline({
         onComplete: () => {
           document.body.style.overflow = '';
-          sessionStorage.setItem(SESSION_KEY, '1');
           setupPhaseB();
         },
       });
@@ -183,7 +186,7 @@ export function Intro() {
     };
   }, [reducedMotion]);
 
-  if (reducedMotion) return null;
+  if (reducedMotion || hasSeenIntro()) return null;
 
   return (
     <div ref={spacerRef} className="relative h-[100svh]" aria-hidden="true">

@@ -13,6 +13,7 @@ import { Intro } from './components/devclub/Intro';
 import { Logo } from './components/ui/Logo';
 import { initSmoothScroll } from './lib/lenis';
 import { useReducedMotion } from './hooks/useReducedMotion';
+import { hasSeenIntro } from './lib/introSession';
 
 /**
  * App - Componente raiz do projeto.
@@ -20,9 +21,10 @@ import { useReducedMotion } from './hooks/useReducedMotion';
  * O smooth scroll (Lenis) só é inicializado quando o usuário não pediu
  * `prefers-reduced-motion` — nesse caso o scroll nativo do navegador é
  * mantido, que já é acessível e previsível por padrão. `#site` nasce com
- * opacity:0 (só quando a intro vai rodar) via style inline no próprio JSX
- * — não depois via JS — para não haver um frame de FOUC antes da Fase B
- * assumir o controle e revelar o conteúdo.
+ * opacity:0 via style inline no próprio JSX (não depois via JS) só quando
+ * a intro vai rodar de verdade — se ela já foi vista nesta sessão de aba,
+ * `<Intro/>` nem monta (ver introSession.ts) e #site precisa aparecer
+ * direto, sem esperar uma Fase B que nunca vai existir.
  */
 function App() {
   const reducedMotion = useReducedMotion();
@@ -33,12 +35,14 @@ function App() {
     return destroy;
   }, [reducedMotion]);
 
+  const introWillRun = !reducedMotion && !hasSeenIntro();
+
   return (
     <>
       <Intro />
       <div
         id="site"
-        style={{ opacity: reducedMotion ? 1 : 0 }}
+        style={{ opacity: introWillRun ? 0 : 1 }}
         className="relative min-h-screen bg-black-dark selection:bg-green-normal/30 selection:text-green-normal"
       >
         <NetworkBackground />
