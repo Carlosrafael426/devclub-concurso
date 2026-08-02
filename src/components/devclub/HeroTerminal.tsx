@@ -2,7 +2,6 @@ import { Check } from 'lucide-react';
 import { Reveal } from '../ui/Reveal';
 import { Counter } from '../ui/Counter';
 import { STAGGER } from '../../lib/motion';
-import { MatrixTextReveal } from './MatrixTextReveal';
 
 type Token = { text: string; className?: string };
 type CodeLine = Token[];
@@ -48,7 +47,12 @@ const CODE_LINES: CodeLine[] = [
 export function HeroTerminal() {
   return (
     <>
-      <MatrixTextReveal className="hidden sm:block" />
+      {/* Wordmark "DevClub" em tipografia oficial (Aldrich, peso 400,
+          branco) — o verde já está reservado para a palavra rotativa do
+          H1 (máximo um destaque verde por viewport). */}
+      <span className="hidden sm:block font-display font-normal text-4xl md:text-5xl text-white">
+        DevClub
+      </span>
       <div className="relative z-10 w-full max-w-[500px]">
         <div className="rounded-card border border-white/10 bg-black-normal/90 backdrop-blur-xl shadow-[0_0_100px_rgba(57, 211, 83, 0.12)] overflow-hidden">
           {/* Barra de título estilo editor de código */}
