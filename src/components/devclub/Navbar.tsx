@@ -6,7 +6,7 @@ import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { Logo } from '../ui/Logo';
 
 const NAV_SECTIONS = [
-  { id: 'formacoes', label: 'Formações' },
+  { id: 'stacks', label: 'Stacks' },
   { id: 'alunos', label: 'Alunos' },
   { id: 'equipe', label: 'Equipe' },
 ];
@@ -130,11 +130,11 @@ export const Navbar: React.FC = () => {
       {isOpen && (
         <div className="md:hidden absolute left-0 right-0 top-full bg-black-normal/95 border-b border-[rgba(218,255,245,0.2)] backdrop-blur-lg flex flex-col py-6 px-6 sm:px-8 gap-6 shadow-2xl animate-fade-in">
           <a
-            href="#formacoes"
+            href="#stacks"
             onClick={() => setIsOpen(false)}
             className="font-sans font-medium text-lg text-gray-300 hover:text-green-normal transition-colors"
           >
-            Formações
+            Stacks
           </a>
           <a
             href="#alunos"

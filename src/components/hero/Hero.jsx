@@ -193,7 +193,7 @@ export default function Hero() {
             Brasil. Projetos reais, mentoria ativa e uma comunidade que não te
             deixa pra trás.
           </p>
-          <ButtonPrimary href="#formacoes">Ver formações</ButtonPrimary>
+          <ButtonPrimary href="#stacks">Ver tecnologias</ButtonPrimary>
         </div>
 
         <div className="hero__field" ref={fieldElRef}>
