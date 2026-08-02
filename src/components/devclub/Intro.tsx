@@ -1,0 +1,198 @@
+import { useLayoutEffect, useRef } from 'react';
+import { gsap, ScrollTrigger, SplitText } from '../../lib/gsap';
+import { DURATION, EASE, STAGGER, DISTANCE } from '../../lib/motion';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { Logo } from '../ui/Logo';
+
+const SESSION_KEY = 'devclub:intro-seen';
+const MAX_FONT_WAIT_MS = 1500;
+
+/**
+ * Intro cinematográfica: ao carregar, só o logo (módulos se montando em
+ * ordem aleatória — materialização, não barra de progresso) e o wordmark
+ * abaixo dele. Ao rolar, uma única camada de profundidade: o logo recua
+ * (escala para baixo + blur, nunca para cima — "câmera atravessando"
+ * seria enérgico mas desorientador) enquanto o site emerge por trás. Não
+ * usa a opção `pin` do ScrollTrigger: `#intro` já é `position:fixed` por
+ * conta própria, então "prender" um elemento que nunca sai do viewport
+ * seria redundante — o próprio `#intro-spacer` (100svh, fluxo normal) já
+ * reserva a distância de scroll, e a camada fixa só precisa desaparecer
+ * (opacity) no fim para revelar `#site`, que já rolou pra posição certa
+ * por baixo dela.
+ */
+export function Intro() {
+  const reducedMotion = useReducedMotion();
+  const spacerRef = useRef<HTMLDivElement | null>(null);
+  const introRef = useRef<HTMLDivElement | null>(null);
+  const logoRef = useRef<SVGSVGElement | null>(null);
+  const wordRef = useRef<HTMLDivElement | null>(null);
+  const hintRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (reducedMotion) return;
+
+    const spacer = spacerRef.current;
+    const intro = introRef.current;
+    const logoSvg = logoRef.current;
+    const wordEl = wordRef.current;
+    const hintEl = hintRef.current;
+    if (!spacer || !intro || !logoSvg || !wordEl || !hintEl) return;
+
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    const rects = logoSvg.querySelectorAll('rect');
+
+    let phaseBTween: gsap.core.Timeline | null = null;
+    let split: SplitText | null = null;
+    let cancelled = false;
+
+    // Estado inicial escondido, aplicado de forma síncrona (useLayoutEffect,
+    // antes do primeiro paint) — independente de qual caminho (Fase A
+    // completa ou pulada via sessionStorage) vai revelar depois. Sem isto
+    // haveria um frame com tudo visível antes do gate de fontes resolver.
+    gsap.set(rects, { scale: 0, opacity: 0, transformOrigin: 'center' });
+    gsap.set(wordEl, { opacity: 0 });
+    gsap.set(hintEl, { opacity: 0, y: DISTANCE.sm });
+
+    // Fase B roda em toda visita (com ou sem Fase A) — só o momento em que
+    // é criada muda. Uma única ScrollTrigger com scrub controla tudo.
+    const setupPhaseB = () => {
+      if (cancelled) return;
+      const site = document.getElementById('site');
+      const navLogo = document.getElementById('nav-logo-icon');
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: spacer,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
+        defaults: { ease: EASE.scrub },
+      });
+
+      tl.to(hintEl, { opacity: 0, y: DISTANCE.sm, duration: 0.12 }, 0);
+      tl.to(wordEl, { opacity: 0, y: -DISTANCE.md, duration: 0.35 }, 0);
+      tl.to(
+        logoSvg,
+        {
+          scale: 0.28,
+          opacity: 0,
+          filter: isMobile ? 'none' : 'blur(6px)',
+          duration: 0.62,
+        },
+        0.08
+      );
+      if (site) {
+        tl.fromTo(
+          site,
+          { opacity: 0, scale: 0.92, y: 40 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.7 },
+          0.3
+        );
+      }
+      if (navLogo) {
+        tl.fromTo(navLogo, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.55);
+      }
+      tl.to(intro, { opacity: 0, duration: 0.2 }, 0.78);
+
+      phaseBTween = tl;
+      // O refresh global de main.tsx dispara em document.fonts.ready, que é
+      // ANTES desta ScrollTrigger existir (só é criada aqui) — sem isto o
+      // cálculo de distância ficaria baseado num layout desatualizado.
+      ScrollTrigger.refresh();
+    };
+
+    const showFinalLogoState = () => {
+      gsap.set(rects, { scale: 1, opacity: 1, clearProps: 'transform,opacity' });
+      gsap.set(wordEl, { opacity: 1 });
+      gsap.set(hintEl, { opacity: 1, y: 0 });
+    };
+
+    const runPhaseA = () => {
+      if (cancelled) return;
+
+      if (sessionStorage.getItem(SESSION_KEY) === '1') {
+        showFinalLogoState();
+        setupPhaseB();
+        return;
+      }
+
+      document.body.style.overflow = 'hidden';
+
+      split = new SplitText(wordEl, { type: 'lines,chars', linesClass: 'line-mask' });
+      gsap.set(split.chars, { yPercent: 110, opacity: 0 });
+      gsap.set(wordEl, { opacity: 1 });
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          document.body.style.overflow = '';
+          sessionStorage.setItem(SESSION_KEY, '1');
+          setupPhaseB();
+        },
+      });
+
+      // 1. Os 48 módulos se montam em ordem aleatória — materialização do
+      // glifo, não leitura de progresso (from:"start" leria como
+      // carregamento sequencial).
+      tl.to(rects, {
+        scale: 1,
+        opacity: 1,
+        duration: isMobile ? 0.35 : 0.5,
+        ease: EASE.back,
+        stagger: { each: STAGGER.modules, from: 'random' },
+      });
+
+      // 2. Wordmark revela por caracteres com máscara — sobreposto ao fim
+      // da montagem do logo pra não sentir como fila.
+      tl.to(
+        split.chars,
+        {
+          yPercent: 0,
+          opacity: 1,
+          duration: DURATION.reveal,
+          ease: EASE.expo,
+          stagger: STAGGER.chars,
+        },
+        isMobile ? '-=0.15' : '-=0.25'
+      );
+
+      // 3. Indicador de scroll.
+      tl.to(hintEl, { opacity: 1, y: 0, duration: 0.5, ease: EASE.out }, '-=0.3');
+    };
+
+    const timeout = new Promise<void>((resolve) => window.setTimeout(resolve, MAX_FONT_WAIT_MS));
+    Promise.race([document.fonts.ready.then(() => undefined), timeout]).then(runPhaseA);
+
+    return () => {
+      cancelled = true;
+      document.body.style.overflow = '';
+      phaseBTween?.scrollTrigger?.kill();
+      phaseBTween?.kill();
+      split?.revert();
+    };
+  }, [reducedMotion]);
+
+  if (reducedMotion) return null;
+
+  return (
+    <div ref={spacerRef} className="relative h-[100svh]" aria-hidden="true">
+      <div
+        ref={introRef}
+        className="pointer-events-none fixed inset-0 z-[100] flex flex-col items-center justify-center gap-6 bg-black-dark"
+      >
+        <div className="flex flex-col items-center gap-6">
+          <Logo ref={logoRef} size={200} color="green" />
+          <div ref={wordRef} className="overflow-hidden">
+            <span className="font-display font-normal text-3xl sm:text-4xl text-white">DevClub</span>
+          </div>
+        </div>
+
+        <div ref={hintRef} className="absolute bottom-10 flex flex-col items-center gap-2 text-gray-300">
+          <span className="font-mono text-xs uppercase tracking-widest">role para entrar_</span>
+          <span className="h-6 w-px bg-green-normal animate-intro-hint" aria-hidden="true" />
+        </div>
+      </div>
+    </div>
+  );
+}

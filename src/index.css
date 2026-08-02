@@ -35,21 +35,6 @@
   --radius-badge: 4px;
   --radius-btn: 8px;
   --radius-card: 16px;
-
-  /* --color-brand-*: tokens antigos, mantidos só até a varredura de
-     substituição terminar (Parte 1.7 os remove). */
-  --color-brand-bg: #111012;
-  --color-brand-surface: #181719;
-  --color-brand-surface-light: #1F1E20;
-
-  --color-brand-green: #39D353;
-  --color-brand-green-dark: #23A639;
-  --color-brand-green-darken: #0CAE53;
-  --color-brand-green-light: #5BF175;
-
-  --color-brand-purple: #8532F2;
-  --color-brand-purple-dark: #5300C2;
-  --color-brand-purple-light: #984BFF;
 }
 
 @layer base {
@@ -168,6 +153,21 @@
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+/* ==============================
+   INDICADOR DE SCROLL DA INTRO
+   Única animação em loop permitida na intro — sem ela o usuário não sabe
+   que precisa rolar e some da página. Some inteira sob reduced-motion
+   porque o componente <Intro> nem chega a montar nesse caso.
+   ============================== */
+@keyframes intro-hint {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50%      { transform: translateY(10px); opacity: 1; }
+}
+
+.animate-intro-hint {
+  animation: intro-hint 1.8s ease-in-out infinite;
 }
 
 /* ==============================

@@ -23,6 +23,7 @@ export const STAGGER = {
   chars: 0.03,
   words: 0.05,
   cards: 0.09,
+  modules: 0.012, // módulos do logo se montando na intro (Intro.tsx)
 } as const;
 
 export const DISTANCE = {
