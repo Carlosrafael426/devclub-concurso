@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Navbar } from './components/devclub/Navbar';
-import { Hero } from './components/devclub/Hero';
+import Hero from './components/hero/Hero';
 import { Formacoes } from './components/devclub/Formacoes';
 import { Alunos } from './components/devclub/Alunos';
 import { Equipe } from './components/devclub/Equipe';
