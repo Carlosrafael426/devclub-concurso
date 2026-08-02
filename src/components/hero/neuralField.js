@@ -58,8 +58,6 @@ export class NeuralField {
 
     this.W = 0; this.H = 0; this.DPR = 1; this.CX = 0; this.CY = 0;
     this.t = 0; this.alpha = 0; this.raf = null; this.running = false;
-    this.lastScrollY = typeof window !== "undefined" ? window.scrollY : 0;
-    this.smoothVel = 0;
 
     this._onResize = () => this._resize();
     window.addEventListener("resize", this._onResize);
@@ -170,14 +168,9 @@ export class NeuralField {
   _frame = () => {
     const o = this.o, ctx = this.ctx;
 
-    // Velocidade de scroll suavizada — mesma "assinatura de velocidade"
-    // usada em outras seções do site.
-    const y = window.scrollY;
-    this.smoothVel += (y - this.lastScrollY - this.smoothVel) * 0.15;
-    this.lastScrollY = y;
-    const vel = Math.min(Math.abs(this.smoothVel), 40);
-    const speed = 1 + vel / 7;
-    this.t += 0.004 * speed;
+    // Velocidade constante — a câmera avança no mesmo ritmo o tempo todo,
+    // sem reagir ao scroll do usuário.
+    this.t += 0.004;
 
     ctx.setTransform(this.DPR, 0, 0, this.DPR, 0, 0);
     ctx.clearRect(0, 0, this.W, this.H);
@@ -185,7 +178,7 @@ export class NeuralField {
 
     const all = this.nodes.concat(this.courseNodes);
     all.forEach((p) => {
-      p.z -= o.baseSpeed * speed;
+      p.z -= o.baseSpeed;
       if (p.z < o.zNear) {
         p.z = o.zFar;
         p.x = rnd(-o.spread, o.spread);
@@ -220,7 +213,7 @@ export class NeuralField {
       if (e.beads) {
         const N = o.beadsPerEdge;
         for (let i = 0; i < N; i++) {
-          const f = (((i / N + e.off + this.t * 0.22 * speed) % 1) + 1) % 1;
+          const f = (((i / N + e.off + this.t * 0.22) % 1) + 1) % 1;
           const bx = pa.x + (pb.x - pa.x) * f;
           const by = pa.y + (pb.y - pa.y) * f;
           ctx.beginPath();
@@ -254,7 +247,6 @@ export class NeuralField {
   start() {
     if (this.running) return;
     this.running = true;
-    this.lastScrollY = window.scrollY;
     this.raf = requestAnimationFrame(this._frame);
   }
 
