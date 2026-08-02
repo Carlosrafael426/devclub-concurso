@@ -91,11 +91,11 @@ export function Intro() {
         },
       });
 
-      tl.to(hintEl, { opacity: 0, y: DISTANCE.sm, duration: 0.25 }, 0);
-      tl.to(wordEl, { opacity: 0, y: -DISTANCE.md, duration: 0.4 }, 0);
+      tl.to(hintEl, { opacity: 0, y: DISTANCE.sm, duration: 0.2 }, 0);
+      tl.to(wordEl, { opacity: 0, y: -DISTANCE.md, duration: 0.35 }, 0);
       tl.to(
         logoSvg,
-        { scale: 0.28, opacity: 0, filter: isMobile ? 'none' : 'blur(6px)', duration: 0.7 },
+        { scale: 0.28, opacity: 0, filter: isMobile ? 'none' : 'blur(6px)', duration: 0.65 },
         0.05
       );
       if (site) {
@@ -106,7 +106,7 @@ export function Intro() {
             opacity: 1,
             scale: 1,
             y: 0,
-            duration: 0.8,
+            duration: 0.75,
             // Sem isso o GSAP deixa `transform: matrix(...)` (mesmo em
             // identidade) como inline style pro resto da sessão — qualquer
             // valor de transform diferente de "none" vira containing block
@@ -115,13 +115,18 @@ export function Intro() {
             // travado no viewport.
             clearProps: 'transform',
           },
-          0.25
+          0.15
         );
       }
       if (navLogo) {
-        tl.fromTo(navLogo, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.5);
+        tl.fromTo(navLogo, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.35);
       }
-      tl.to(intro, { opacity: 0, duration: 0.3 }, 0.85);
+      // O overlay começa a sumir quase junto com o site emergindo (0.2, não
+      // lá no fim) — as duas animações correm em paralelo por quase toda a
+      // duração, então o site "atravessa" o overlay conforme ele se
+      // dissolve, em vez de ficar escondido atrás de um preto sólido até um
+      // corte seco no fim.
+      tl.to(intro, { opacity: 0, duration: 0.7 }, 0.2);
 
       phaseBTween = tl;
     };
