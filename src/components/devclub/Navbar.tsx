@@ -1,17 +1,70 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { gsap, ScrollTrigger } from '../../lib/gsap';
+import { EASE } from '../../lib/motion';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
+
+const NAV_SECTIONS = [
+  { id: 'formacoes', label: 'Formações' },
+  { id: 'alunos', label: 'Alunos' },
+  { id: 'equipe', label: 'Equipe' },
+];
 
 /**
- * Navbar - Componente de navegação superior responsivo
- * Apresenta a logo do DevClub, links principais de navegação e botão CTA
+ * Navbar - Componente de navegação superior responsivo.
+ * Antes era 100% estática (sem nenhuma lógica de scroll); agora o fundo
+ * ganha opacidade progressiva nos primeiros 120px de scroll (scrub,
+ * ease:none) em vez de aparecer/sumir bruscamente, e um indicador de seção
+ * ativa acompanha o scroll via ScrollTrigger.toggleClass — sem nunca
+ * esconder o header, que é uma affordance de navegação permanente.
  */
 export const Navbar: React.FC = () => {
   // Estado para controlar a abertura/fechamento do menu mobile
   const [isOpen, setIsOpen] = useState(false);
+  const bgRef = useRef<HTMLDivElement | null>(null);
+  const linkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (bgRef.current) {
+        if (reducedMotion) {
+          gsap.set(bgRef.current, { opacity: 1 });
+        } else {
+          gsap.fromTo(
+            bgRef.current,
+            { opacity: 0 },
+            {
+              opacity: 1,
+              ease: EASE.scrub,
+              scrollTrigger: { trigger: document.documentElement, start: 'top top', end: '+=120', scrub: true },
+            }
+          );
+        }
+      }
+
+      // Indicador de seção ativa: um toggle de classe discreto, não uma
+      // animação — mantido mesmo com prefers-reduced-motion.
+      NAV_SECTIONS.forEach((section, idx) => {
+        const target = document.getElementById(section.id);
+        const link = linkRefs.current[idx];
+        if (!target || !link) return;
+        ScrollTrigger.create({
+          trigger: target,
+          start: 'top center',
+          end: 'bottom center',
+          toggleClass: { targets: link, className: 'nav-link-active' },
+        });
+      });
+    });
+
+    return () => ctx.revert();
+  }, [reducedMotion]);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 border-b border-white/[0.05] bg-[#111012]/80 backdrop-blur-md transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+    <nav className="fixed top-0 left-0 w-full z-50">
+      <div ref={bgRef} className="absolute inset-0 border-b border-white/[0.05] bg-[#111012]/90 backdrop-blur-md opacity-0" />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
 
         {/* Logo DevClub (Apenas o Ícone estilo QR-Code Verde com link para o topo/hero) */}
         <div className="flex items-center select-none">
@@ -52,24 +105,18 @@ export const Navbar: React.FC = () => {
 
         {/* Menu Desktop */}
         <div className="hidden md:flex items-center gap-8 font-sans font-medium text-sm text-slate-300">
-          <a
-            href="#formacoes"
-            className="relative py-1 hover:text-white transition-colors duration-200 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-green hover:after:w-full after:transition-all after:duration-[600ms]"
-          >
-            Formações
-          </a>
-          <a
-            href="#alunos"
-            className="relative py-1 hover:text-white transition-colors duration-200 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-green hover:after:w-full after:transition-all after:duration-[600ms]"
-          >
-            Alunos
-          </a>
-          <a
-            href="#equipe"
-            className="relative py-1 hover:text-white transition-colors duration-200 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-green hover:after:w-full after:transition-all after:duration-[600ms]"
-          >
-            Equipe
-          </a>
+          {NAV_SECTIONS.map((section, idx) => (
+            <a
+              key={section.id}
+              ref={(el) => {
+                linkRefs.current[idx] = el;
+              }}
+              href={`#${section.id}`}
+              className="relative py-1 hover:text-white transition-colors duration-200 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-brand-green hover:after:w-full after:transition-all after:duration-[600ms]"
+            >
+              {section.label}
+            </a>
+          ))}
         </div>
 
         {/* Botão de Ação Desktop — group + contra-escala para crescer o botão sem aumentar as letras */}

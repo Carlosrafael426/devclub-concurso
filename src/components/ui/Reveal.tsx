@@ -63,6 +63,7 @@ export function Reveal({
           ease: EASE.expo,
           delay,
           stagger: STAGGER.words,
+          clearProps: 'transform,opacity',
           scrollTrigger: { trigger: el, start, once: true },
         });
       };
@@ -92,6 +93,11 @@ export function Reveal({
         ease: EASE.out,
         delay,
         stagger: stagger ? (typeof stagger === 'number' ? stagger : STAGGER.cards) : 0,
+        // Sem isso, o inline style que o GSAP deixa após o tween (mesmo no
+        // valor final) tem especificidade maior que qualquer classe
+        // Tailwind — bloquearia hover:scale/-translate-y nos mesmos
+        // elementos depois do reveal terminar.
+        clearProps: 'opacity,transform',
         scrollTrigger: { trigger: el, start, once: true },
       });
     }, ref);

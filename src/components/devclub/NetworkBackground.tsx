@@ -1,4 +1,7 @@
 import { useEffect, useRef, type FC } from 'react';
+import { gsap } from '../../lib/gsap';
+import { EASE } from '../../lib/motion';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 export type Hue = 'green' | 'purple' | 'purpleLight';
 
@@ -30,14 +33,16 @@ interface NetworkNode {
  * NetworkBackground
  * Rede de nós conectados por linhas cobrindo a página inteira, com o mesmo
  * padrão visual (densidade, cores, distância de conexão) do background
- * original do Hero — não uma versão diluída por seção. Desenho ESTÁTICO
- * (sem requestAnimationFrame, sem movimento, sem mouse): renderiza uma vez
- * e só refaz quando o layout muda de verdade (resize, fontes carregando,
- * conteúdo mudando de altura). Um único <canvas>, montado uma vez em
- * App.tsx atrás de tudo.
+ * original do Hero — não uma versão diluída por seção. O DESENHO continua
+ * 100% estático (sem requestAnimationFrame redesenhando pixels, decisão de
+ * performance de uma sessão anterior que se mantém), mas o elemento deixa
+ * de ser wallpaper puro: sua saturação (CSS filter, scrub, ease:none) sobe
+ * conforme o usuário avança pela página — responde 1:1 ao scroll, sem
+ * nenhum loop de animação autônomo.
  */
 export const NetworkBackground: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -137,6 +142,30 @@ export const NetworkBackground: FC = () => {
       window.removeEventListener('load', redraw);
     };
   }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || reducedMotion) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        canvas,
+        { filter: 'saturate(0.6)' },
+        {
+          filter: 'saturate(1.5)',
+          ease: EASE.scrub,
+          scrollTrigger: {
+            trigger: document.documentElement,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: true,
+          },
+        }
+      );
+    });
+
+    return () => ctx.revert();
+  }, [reducedMotion]);
 
   return (
     <canvas

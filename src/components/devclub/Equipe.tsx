@@ -1,5 +1,6 @@
 import { Globe } from 'lucide-react';
 import { Reveal } from '../ui/Reveal';
+import { TiltCard } from '../ui/TiltCard';
 import { DISTANCE } from '../../lib/motion';
 /**
  * Equipe - Seção de mentores e time de suporte técnico do DevClub.
@@ -7,8 +8,7 @@ import { DISTANCE } from '../../lib/motion';
  * e a bio desliza de baixo para cima via clip-path — nome/cargo continuam
  * sempre legíveis (legenda fixa) para não depender do hover em touch. Era
  * a seção com menos interatividade da página (nenhum hover de card antes).
- * O tilt 3D sutil fica para a Fase 4, quando existir o <TiltCard/> genérico
- * (reaproveitado do mesmo mecanismo hoje hardcoded no Hero).
+ * O tilt 3D (TiltCard) usa o mesmo componente genérico do Hero.
  */
 export const Equipe: React.FC = () => {
   const time = [
@@ -61,8 +61,9 @@ export const Equipe: React.FC = () => {
         {/* Grade de Mentores */}
         <Reveal as="div" stagger delay={0.35} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
           {time.map((mentor, idx) => (
-            <div
+            <TiltCard
               key={idx}
+              max={5}
               className="group rounded-xl glass-panel overflow-hidden flex flex-col"
             >
               {/* Foto cinematográfica: grayscale -> cor no hover, bio revelada por clip-path */}
@@ -123,7 +124,7 @@ export const Equipe: React.FC = () => {
                   </a>
                 )}
               </div>
-            </div>
+            </TiltCard>
           ))}
         </Reveal>
       </div>

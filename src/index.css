@@ -142,6 +142,27 @@
 }
 
 /* ==============================
+   NAVEGAÇÃO: indicador de seção ativa (Navbar, via ScrollTrigger.toggleClass)
+   ============================== */
+.nav-link-active {
+  color: #fff;
+}
+.nav-link-active::after {
+  width: 100%;
+}
+
+/* ==============================
+   ACESSIBILIDADE: foco visível
+   Todo elemento interativo mantém um indicador de foco (nunca outline:none
+   sem substituto) — sinal de senioridade, não detalhe opcional.
+   ============================== */
+:focus-visible {
+  outline: 2px solid var(--color-brand-green);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ==============================
    ACESSIBILIDADE: prefers-reduced-motion
    Desliga todo movimento não essencial (loops, blink, marquee, parallax)
    mantendo o conteúdo final visível e o layout estável — quem pede menos

@@ -24,6 +24,7 @@ export function FormacaoCard({ modulo, ref }: FormacaoCardProps) {
   return (
     <div
       ref={ref}
+      data-cursor-label="Ver módulo"
       className="group relative w-full lg:w-[360px] flex-shrink-0 overflow-hidden p-6 sm:p-8 rounded-xl glass-panel hover:border-brand-green/20 transition-colors duration-300 flex flex-col justify-between gap-6"
     >
       <span

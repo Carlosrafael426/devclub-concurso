@@ -1,19 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Reveal } from '../ui/Reveal';
+import { Counter } from '../ui/Counter';
 import { DISTANCE, DURATION, EASE } from '../../lib/motion';
 import { gsap, ScrollTrigger } from '../../lib/gsap';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 /**
  * Alunos - Seção de depoimentos e histórias de sucesso (cases reais)
  * Exibe alunos reais/fictícios que mudaram de carreira por meio do método DevClub.
- * O contador de estatísticas ainda é manual aqui (vira <Counter/> na Fase 4,
- * unificado com o contador hoje duplicado no Hero) — só o gatilho de
- * visibilidade foi migrado de IntersectionObserver para ScrollTrigger.
+ * Os contadores de estatística usam <Counter/> (Fase 4), que substitui esta
+ * implementação manual e a duplicata que existia no Hero.
  */
 export const Alunos: React.FC = () => {
   const statsRef = useRef<HTMLDivElement | null>(null);
-  const [statsVisible, setStatsVisible] = useState(false);
-  const [stats, setStats] = useState({ employability: 0, salary: 0, vacancies: 0 });
   const reducedMotion = useReducedMotion();
   const photoRefs = useRef<(HTMLImageElement | null)[]>([]);
   // Lista fictícia baseada em casos reais de transição de carreira comuns no DevClub
@@ -46,22 +44,14 @@ export const Alunos: React.FC = () => {
 
   useEffect(() => {
     const el = statsRef.current;
-    if (!el) return;
-
-    if (reducedMotion) {
-      setStatsVisible(true);
-      return;
-    }
+    if (!el || reducedMotion) return;
 
     gsap.set(el, { opacity: 0, y: DISTANCE.sm });
     const trigger = ScrollTrigger.create({
       trigger: el,
       start: 'top 85%',
       once: true,
-      onEnter: () => {
-        setStatsVisible(true);
-        gsap.to(el, { opacity: 1, y: 0, duration: DURATION.reveal, ease: EASE.out });
-      },
+      onEnter: () => gsap.to(el, { opacity: 1, y: 0, duration: DURATION.reveal, ease: EASE.out }),
     });
     return () => trigger.kill();
   }, [reducedMotion]);
@@ -85,33 +75,6 @@ export const Alunos: React.FC = () => {
     });
     return () => ctx.revert();
   }, [reducedMotion]);
-
-  useEffect(() => {
-    if (!statsVisible) return;
-
-    const targets = { employability: 92, salary: 4200, vacancies: 2500 };
-    const duration = 1400;
-    const startTime = window.setTimeout(() => {
-      const start = Date.now();
-      const tick = () => {
-        const progress = Math.min((Date.now() - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        setStats({
-          employability: Math.round(targets.employability * eased),
-          salary: Math.round(targets.salary * eased),
-          vacancies: Math.round(targets.vacancies * eased),
-        });
-        if (progress < 1) {
-          window.requestAnimationFrame(tick);
-        }
-      };
-      tick();
-    }, 150);
-
-    return () => {
-      window.clearTimeout(startTime);
-    };
-  }, [statsVisible]);
 
   return (
     <section id="alunos" className="relative py-20 sm:py-24 bg-brand-bg/85 overflow-hidden">
@@ -177,17 +140,17 @@ export const Alunos: React.FC = () => {
 
         <div ref={statsRef} className="mt-12 sm:mt-20 p-6 sm:p-8 rounded-xl glass-panel flex flex-col md:flex-row justify-around items-center gap-6 sm:gap-8 text-center md:text-left">
           <div>
-            <span className="font-display font-extrabold text-3xl sm:text-4xl text-white">{stats.employability}%</span>
+            <Counter value={92} suffix="%" className="font-display font-extrabold text-3xl sm:text-4xl text-white" />
             <p className="font-sans text-[10px] sm:text-xs text-slate-400 uppercase tracking-widest mt-1">Taxa de Empregabilidade</p>
           </div>
           <div className="w-px h-12 bg-white/[0.08] hidden md:block" />
           <div>
-            <span className="font-display font-extrabold text-3xl sm:text-4xl text-white">R$ {stats.salary.toLocaleString('pt-BR')}</span>
+            <Counter value={4200} prefix="R$ " className="font-display font-extrabold text-3xl sm:text-4xl text-white" />
             <p className="font-sans text-[10px] sm:text-xs text-slate-400 uppercase tracking-widest mt-1">Média salarial de contratação</p>
           </div>
           <div className="w-px h-12 bg-white/[0.08] hidden md:block" />
           <div>
-            <span className="font-display font-extrabold text-3xl sm:text-4xl text-white">{stats.vacancies.toLocaleString('pt-BR')}+</span>
+            <Counter value={2500} suffix="+" className="font-display font-extrabold text-3xl sm:text-4xl text-white" />
             <p className="font-sans text-[10px] sm:text-xs text-slate-400 uppercase tracking-widest mt-1">Vagas preenchidas por alunos</p>
           </div>
         </div>

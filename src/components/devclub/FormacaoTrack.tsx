@@ -156,7 +156,7 @@ export function FormacaoTrack({ modulos }: FormacaoTrackProps) {
           <line ref={lineRef} x1="0" y1="0" x2="100%" y2="0" stroke="#39D353" strokeOpacity={0.35} strokeWidth={2} />
         </svg>
 
-        <div ref={trackRef} className="flex gap-8 w-max pr-24">
+        <div ref={trackRef} data-cursor="track" className="flex gap-8 w-max pr-24">
           {modulos.map((modulo, idx) => (
             <FormacaoCard
               key={modulo.number}

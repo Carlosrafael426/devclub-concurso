@@ -1,5 +1,6 @@
 import { Check } from 'lucide-react';
 import { Reveal } from '../ui/Reveal';
+import { MagneticButton } from '../ui/MagneticButton';
 import { DISTANCE } from '../../lib/motion';
 /**
  * CTAFinal - Seção de chamada para ação final com fundo dramático
@@ -54,16 +55,16 @@ export const CTAFinal = () => {
 
         {/* CTA principal — destaque máximo */}
         <Reveal as="div" delay={0.35} className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-          <a
+          <MagneticButton
             href="https://www.devclub.com.br"
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-center justify-center px-8 sm:px-12 py-4 sm:py-5 rounded-lg bg-brand-green text-[#111012] font-display font-extrabold text-base sm:text-lg tracking-wide shadow-[0_10px_40px_rgba(57, 211, 83, 0.35)] hover:shadow-[0_16px_60px_rgba(57, 211, 83, 0.6)] hover:scale-[1.05] transition-all duration-300 cursor-pointer"
+            className="group flex items-center justify-center px-8 sm:px-12 py-4 sm:py-5 rounded-lg bg-brand-green text-[#111012] font-display font-extrabold text-base sm:text-lg tracking-wide shadow-[0_10px_40px_rgba(57, 211, 83, 0.35)] hover:shadow-[0_16px_60px_rgba(57, 211, 83, 0.6)] transition-shadow duration-300 cursor-pointer"
           >
             <span className="inline-flex items-center gap-3 group-hover:scale-[0.952] transition-transform duration-300">
               Quero minha vaga agora
             </span>
-          </a>
+          </MagneticButton>
         </Reveal>
 
         {/* Indicadores de confiança */}
