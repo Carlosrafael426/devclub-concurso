@@ -131,7 +131,13 @@ export function FormacaoList({ modulos }: FormacaoListProps) {
       </div>
 
       <div className="hidden lg:block">
-        <div className="sticky top-24">
+        {/* Centralizado no viewport (não ancorado no topo): `top-[50vh]` +
+            `-translate-y-1/2` prende o painel na metade da tela enquanto a
+            coluna da lista (mais alta) ainda está rolando, soltando
+            naturalmente perto do fim da seção — sem depender de altura
+            percentual do container pai, que ficaria instável com
+            `height:auto`. */}
+        <div className="sticky top-[50vh] -translate-y-1/2">
           <FormacaoPanel
             modulo={modulos[visibleIndex]}
             panelRef={(el) => {

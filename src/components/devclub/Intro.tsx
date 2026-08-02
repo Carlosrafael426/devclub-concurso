@@ -2,22 +2,18 @@ import { useLayoutEffect, useRef } from 'react';
 import { gsap, ScrollTrigger, SplitText } from '../../lib/gsap';
 import { EASE, STAGGER, DISTANCE } from '../../lib/motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
-import { hasSeenIntro, INTRO_SESSION_KEY } from '../../lib/introSession';
 import { Logo } from '../ui/Logo';
 
 const MAX_FONT_WAIT_MS = 1500;
 
 /**
- * Intro cinematográfica: roda uma única vez por sessão de aba (checado de
- * forma síncrona, antes do primeiro paint, via `hasSeenIntro()` — nunca
- * dentro de um efeito, que só resolveria depois do componente já ter
- * montado tudo). Em visitas seguintes o componente nem monta: `return
- * null` direto, sem flash de intro seguido de remoção abrupta. A flag é
- * gravada no INÍCIO da Fase A, não no fim — um refresh no meio da
- * animação não deve mostrá-la de novo, já que a intenção de exibi-la já
- * foi cumprida.
+ * Intro cinematográfica: roda em TODO carregamento/recarregamento de
+ * página (decisão explícita do usuário — não é mais "uma vez por sessão"),
+ * só desligada por `prefers-reduced-motion`. Navegação por âncora (`#id`)
+ * não remonta este componente (SPA sem router), então não faz a intro
+ * repetir sozinha no meio da mesma visita.
  *
- * Ao carregar (primeira vez), só o logo (módulos se montando em ordem
+ * Ao carregar, só o logo (módulos se montando em ordem
  * aleatória — materialização, não barra de progresso) e o wordmark
  * abaixo dele. Ao rolar, uma única camada de profundidade: o logo recua
  * (escala para baixo + blur, nunca para cima — "câmera atravessando"
@@ -38,12 +34,7 @@ export function Intro() {
   const hintRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
-    // sessionStorage já resolve o replay mesmo se StrictMode montar/
-    // desmontar este efeito duas vezes em dev (a segunda leitura já
-    // encontra a flag gravada pela primeira, se a primeira chegou a
-    // rodar) — mas o cleanup abaixo (flag `cancelled` + kill manual)
-    // ainda cobre o caso de a Fase A ser interrompida no meio.
-    if (reducedMotion || hasSeenIntro()) return;
+    if (reducedMotion) return;
 
     const spacer = spacerRef.current;
     const intro = introRef.current;
@@ -99,7 +90,19 @@ export function Intro() {
         tl.fromTo(
           site,
           { opacity: 0, scale: 0.92, y: 40 },
-          { opacity: 1, scale: 1, y: 0, duration: 0.7 },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.7,
+            // Sem isso o GSAP deixa `transform: matrix(...)` (mesmo em
+            // identidade) como inline style pro resto da sessão — qualquer
+            // valor de transform diferente de "none" vira containing block
+            // pra descendentes position:fixed, e o Navbar (fixed, dentro de
+            // #site) passaria a "rolar junto" com a página em vez de ficar
+            // travado no viewport.
+            clearProps: 'transform',
+          },
           0.3
         );
       }
@@ -118,10 +121,6 @@ export function Intro() {
     const runPhaseA = () => {
       if (cancelled) return;
 
-      // Grava a flag AGORA — no início de verdade da Fase A, não no fim.
-      // Um refresh no meio da animação não deve repeti-la: a intenção de
-      // mostrá-la já foi cumprida no instante em que ela começou.
-      sessionStorage.setItem(INTRO_SESSION_KEY, '1');
       document.body.style.overflow = 'hidden';
 
       split = new SplitText(wordEl, { type: 'lines,chars', linesClass: 'line-mask' });
@@ -186,7 +185,7 @@ export function Intro() {
     };
   }, [reducedMotion]);
 
-  if (reducedMotion || hasSeenIntro()) return null;
+  if (reducedMotion) return null;
 
   return (
     <div ref={spacerRef} className="relative h-[100svh]" aria-hidden="true">

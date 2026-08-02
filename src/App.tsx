@@ -12,7 +12,6 @@ import { Intro } from './components/devclub/Intro';
 import { Logo } from './components/ui/Logo';
 import { initSmoothScroll } from './lib/lenis';
 import { useReducedMotion } from './hooks/useReducedMotion';
-import { hasSeenIntro } from './lib/introSession';
 
 /**
  * App - Componente raiz do projeto.
@@ -20,10 +19,10 @@ import { hasSeenIntro } from './lib/introSession';
  * O smooth scroll (Lenis) só é inicializado quando o usuário não pediu
  * `prefers-reduced-motion` — nesse caso o scroll nativo do navegador é
  * mantido, que já é acessível e previsível por padrão. `#site` nasce com
- * opacity:0 via style inline no próprio JSX (não depois via JS) só quando
- * a intro vai rodar de verdade — se ela já foi vista nesta sessão de aba,
- * `<Intro/>` nem monta (ver introSession.ts) e #site precisa aparecer
- * direto, sem esperar uma Fase B que nunca vai existir.
+ * opacity:0 via style inline no próprio JSX (não depois via JS) sempre que
+ * a intro vai rodar de verdade (todo carregamento de página, exceto com
+ * reduced-motion) — sem isso haveria um frame com tudo visível antes da
+ * Fase B da intro sequestrar a revelação.
  */
 function App() {
   const reducedMotion = useReducedMotion();
@@ -34,7 +33,7 @@ function App() {
     return destroy;
   }, [reducedMotion]);
 
-  const introWillRun = !reducedMotion && !hasSeenIntro();
+  const introWillRun = !reducedMotion;
 
   return (
     <>
