@@ -105,8 +105,18 @@ export const NetworkBackground: FC = () => {
     };
 
     const redraw = () => {
+      const container = canvas.parentElement;
       width = window.innerWidth;
-      height = Math.max(document.documentElement.scrollHeight, window.innerHeight);
+      // O canvas é absolute/top:0 dentro de #site (que só começa depois do
+      // spacer de 100svh da intro) — medir document.documentElement.
+      // scrollHeight contava também a altura do spacer, sobrando ~1 viewport
+      // de espaço morto depois do footer. A altura certa é a do próprio
+      // container (#site), zerada antes de medir: como o canvas é
+      // absolutely positioned, sua própria altura contamina o scrollHeight
+      // do container se não for zerada primeiro — sem isso ele cresceria
+      // em loop a cada redraw.
+      canvas.style.height = '0px';
+      height = Math.max(container?.scrollHeight ?? 0, window.innerHeight);
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       canvas.style.width = `${width}px`;
@@ -125,19 +135,23 @@ export const NetworkBackground: FC = () => {
     // baseado numa altura de página desatualizada.
     document.fonts.ready.then(redraw).catch(() => {});
 
-    // Reage a qualquer mudança de altura do documento (imagens carregando,
-    // conteúdo dinâmico, etc.), não só uma vez no carregamento.
+    // Reage a qualquer mudança de altura do container (imagens carregando,
+    // conteúdo dinâmico, etc.), não só uma vez no carregamento — observa o
+    // próprio #site (pai do canvas), não document.body, pelo mesmo motivo
+    // acima: body inclui o spacer da intro, que não faz parte da área que
+    // o canvas precisa cobrir.
     let redrawRaf = 0;
     const scheduleRedraw = () => {
       window.cancelAnimationFrame(redrawRaf);
       redrawRaf = window.requestAnimationFrame(redraw);
     };
-    const bodyObserver = new ResizeObserver(scheduleRedraw);
-    bodyObserver.observe(document.body);
+    const container = canvas.parentElement;
+    const containerObserver = new ResizeObserver(scheduleRedraw);
+    if (container) containerObserver.observe(container);
 
     return () => {
       window.cancelAnimationFrame(redrawRaf);
-      bodyObserver.disconnect();
+      containerObserver.disconnect();
       window.removeEventListener('resize', redraw);
       window.removeEventListener('load', redraw);
     };
