@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Navbar } from './components/devclub/Navbar';
 import { Hero } from './components/devclub/Hero';
 import { Formacoes } from './components/devclub/Formacoes';
@@ -6,12 +7,25 @@ import { Equipe } from './components/devclub/Equipe';
 import { Empresas } from './components/devclub/Empresas';
 import { CTAFinal } from './components/devclub/CTAFinal';
 import { NetworkBackground } from './components/devclub/NetworkBackground';
+import { initSmoothScroll } from './lib/lenis';
+import { useReducedMotion } from './hooks/useReducedMotion';
 
 /**
  * App - Componente raiz do projeto.
  * Estrutura a landing page carregando o cabeçalho global e todas as seções principais.
+ * O smooth scroll (Lenis) só é inicializado quando o usuário não pediu
+ * `prefers-reduced-motion` — nesse caso o scroll nativo do navegador é
+ * mantido, que já é acessível e previsível por padrão.
  */
 function App() {
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    const destroy = initSmoothScroll();
+    return destroy;
+  }, [reducedMotion]);
+
   return (
     <div className="relative min-h-screen bg-brand-bg selection:bg-brand-green/30 selection:text-brand-green">
       <NetworkBackground />

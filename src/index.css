@@ -125,20 +125,6 @@
 }
 
 /* ==============================
-   PARTÍCULAS FLUTUANTES (Hero)
-   ============================== */
-@keyframes particle-float {
-  0%, 100% { 
-    transform: translateY(0px) scale(1); 
-    opacity: 0.2; 
-  }
-  50% { 
-    transform: translateY(-20px) scale(1.2); 
-    opacity: 0.6; 
-  }
-}
-
-/* ==============================
    CURSOR PISCANTE DO TYPEWRITER
    ============================== */
 @keyframes blink-cursor {
@@ -189,4 +175,26 @@
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+/* ==============================
+   ACESSIBILIDADE: prefers-reduced-motion
+   Desliga todo movimento não essencial (loops, blink, marquee, parallax)
+   mantendo o conteúdo final visível e o layout estável — quem pede menos
+   movimento recebe "sem movimento", não "movimento mais rápido".
+   ============================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .fade-up {
+    opacity: 1;
+    transform: none;
+  }
 }
