@@ -1,23 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Reveal } from '../ui/Reveal';
 import { DISTANCE } from '../../lib/motion';
-import { gsap, ScrollTrigger } from '../../lib/gsap';
-import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { MarqueeRow, type Empresa } from './MarqueeRow';
 /**
  * Empresas - Seção "Empresas que contratam nossos devs"
- * Duas faixas em direções opostas (em vez de uma única, como nas outras
- * seções de marquee genéricas), com velocidade modulada pela velocidade do
- * scroll do usuário — o carrossel deixa de ser wallpaper autônomo e passa a
- * reagir a como a pessoa está navegando. No hover, a faixa desacelera e o
- * logo sob o cursor ganha destaque enquanto os demais saem de foco
- * (isolamento por contraste).
+ * Duas faixas em direções opostas (MarqueeRow), em vez de uma única faixa
+ * genérica, com velocidade modulada pela velocidade do scroll do usuário.
  */
-
-interface Empresa {
-  nome: string;
-  monograma: string;
-  cor: string;
-}
 
 // Lista de empresas que contratam alunos do DevClub (dados fictícios para o concurso)
 const EMPRESAS: Empresa[] = [
@@ -43,115 +32,6 @@ const EMPRESAS: Empresa[] = [
 const ROW_A = [...EMPRESAS, ...EMPRESAS];
 const ROW_B = [...EMPRESAS].reverse();
 const ROW_B_LOOP = [...ROW_B, ...ROW_B];
-
-function MarqueeRow({
-  id,
-  items,
-  direction,
-  hovered,
-  onHover,
-}: {
-  id: 'A' | 'B';
-  items: Empresa[];
-  direction: 1 | -1;
-  hovered: string | null;
-  onHover: (key: string | null) => void;
-}) {
-  const rowRef = useRef<HTMLDivElement | null>(null);
-  const timelineRef = useRef<gsap.core.Timeline | null>(null);
-  const hoveringRef = useRef(false);
-  const reducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    const row = rowRef.current;
-    if (!row || reducedMotion) return;
-
-    const ctx = gsap.context(() => {
-      gsap.set(row, { xPercent: direction === 1 ? 0 : -50 });
-      const tl = gsap.timeline({ repeat: -1 }).to(row, {
-        xPercent: direction === 1 ? -50 : 0,
-        duration: 34,
-        ease: 'none',
-      });
-      timelineRef.current = tl;
-
-      // ScrollTrigger.create sem trigger rastreia o scroll da página inteira
-      // (scroller padrão = window) só para expor .getVelocity() a cada frame.
-      const velocityTracker = ScrollTrigger.create({});
-      const applyVelocity = () => {
-        if (hoveringRef.current) return;
-        const v = Math.min(Math.abs(velocityTracker.getVelocity()) / 2500, 1.4);
-        tl.timeScale(1 + v);
-      };
-      gsap.ticker.add(applyVelocity);
-
-      return () => {
-        gsap.ticker.remove(applyVelocity);
-        velocityTracker.kill();
-      };
-    }, row);
-
-    return () => ctx.revert();
-  }, [reducedMotion, direction]);
-
-  const handleRowEnter = () => {
-    hoveringRef.current = true;
-    if (timelineRef.current) {
-      gsap.to(timelineRef.current, { timeScale: 0.15, duration: 0.2, overwrite: true });
-    }
-  };
-
-  const handleRowLeave = () => {
-    hoveringRef.current = false;
-    onHover(null);
-    if (timelineRef.current) {
-      gsap.to(timelineRef.current, { timeScale: 1, duration: 0.2, overwrite: true });
-    }
-  };
-
-  return (
-    <div
-      className="marquee-wrapper relative overflow-hidden select-none"
-      onMouseEnter={handleRowEnter}
-      onMouseLeave={handleRowLeave}
-    >
-      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 z-10 bg-gradient-to-r from-brand-surface-light to-transparent pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 z-10 bg-gradient-to-l from-brand-surface-light to-transparent pointer-events-none" />
-
-      <div ref={rowRef} className="flex gap-4 sm:gap-5 w-max">
-        {items.map((empresa, idx) => {
-          const key = `${id}-${idx}`;
-          const isHovered = hovered === key;
-          const isDimmed = hovered !== null && !isHovered;
-          return (
-            <div
-              key={key}
-              onMouseEnter={() => onHover(key)}
-              className={`flex flex-col items-center gap-3 flex-shrink-0 w-28 sm:w-32 px-4 py-6 rounded-xl glass-panel transition-all duration-200 ${
-                isHovered ? 'scale-110 grayscale-0 opacity-100' : isDimmed ? 'grayscale opacity-40 scale-95' : 'grayscale-0 opacity-90'
-              }`}
-            >
-              <div
-                className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg flex items-center justify-center font-display font-extrabold text-base sm:text-lg"
-                style={{
-                  backgroundColor: `${empresa.cor}1A`,
-                  color: empresa.cor,
-                  border: `1px solid ${empresa.cor}40`,
-                  boxShadow: `0 0 24px ${empresa.cor}30`,
-                }}
-              >
-                {empresa.monograma}
-              </div>
-              <span className="text-xs sm:text-sm font-medium text-slate-300 text-center whitespace-nowrap">
-                {empresa.nome}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 export const Empresas = () => {
   const [hovered, setHovered] = useState<string | null>(null);

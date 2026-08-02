@@ -39,7 +39,7 @@ export const CTAFinal = () => {
         </Reveal>
 
         {/* Headline principal com destaque gradiente */}
-        <Reveal as="h2" split="words" delay={0.1} className="font-display font-extrabold text-4xl sm:text-5xl md:text-7xl tracking-tight text-white leading-[1.05] mb-4">
+        <Reveal as="h2" split="words" delay={0.1} className="font-display font-extrabold text-[clamp(3rem,9vw,8rem)] tracking-[-0.03em] text-white leading-[1.02] mb-4">
           Sua carreira dev<br />
           <span className="bg-gradient-to-r from-brand-green via-brand-green-light to-brand-purple bg-clip-text text-transparent">
             começa aqui.
@@ -70,7 +70,7 @@ export const CTAFinal = () => {
         {/* Indicadores de confiança */}
         <Reveal as="ul" stagger delay={0.45} className="flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-2.5 sm:gap-y-2">
           {garantias.map((garantia) => (
-            <li key={garantia} className="flex items-center gap-2 font-sans text-xs sm:text-sm text-slate-500 text-left">
+            <li key={garantia} className="flex items-center gap-2 font-sans text-xs sm:text-sm text-slate-400 text-left">
               <Check size={14} className="site-icon text-brand-green flex-shrink-0" />
               {garantia}
             </li>

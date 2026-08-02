@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from '../../lib/gsap';
+import { DURATION, EASE } from '../../lib/motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 type CursorState = 'default' | 'link' | 'card' | 'track';
@@ -27,8 +28,8 @@ export function Cursor() {
     const dot = dotRef.current;
     if (!dot) return;
 
-    const moveX = gsap.quickTo(dot, 'x', { duration: 0.15, ease: 'power3.out' });
-    const moveY = gsap.quickTo(dot, 'y', { duration: 0.15, ease: 'power3.out' });
+    const moveX = gsap.quickTo(dot, 'x', { duration: DURATION.micro, ease: EASE.out });
+    const moveY = gsap.quickTo(dot, 'y', { duration: DURATION.micro, ease: EASE.out });
 
     const handleMove = (event: MouseEvent) => {
       moveX(event.clientX);

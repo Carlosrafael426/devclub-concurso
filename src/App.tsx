@@ -9,6 +9,7 @@ import { CTAFinal } from './components/devclub/CTAFinal';
 import { NetworkBackground } from './components/devclub/NetworkBackground';
 import { Cursor } from './components/ui/Cursor';
 import { ScrollProgress } from './components/ui/ScrollProgress';
+import { Preloader } from './components/ui/Preloader';
 import { initSmoothScroll } from './lib/lenis';
 import { useReducedMotion } from './hooks/useReducedMotion';
 
@@ -30,6 +31,7 @@ function App() {
 
   return (
     <div className="relative min-h-screen bg-brand-bg selection:bg-brand-green/30 selection:text-brand-green">
+      <Preloader />
       <NetworkBackground />
       <ScrollProgress />
       <Cursor />
@@ -69,7 +71,7 @@ function App() {
               <rect x="29.5" y="32.5" width="5" height="5" rx="1" fill="#39D353" />
             </svg>
           </div>
-          <span className="font-sans text-sm text-slate-500">
+          <span className="font-sans text-sm text-slate-400">
             &copy; {new Date().getFullYear()} DevClub. Todos os direitos reservados.
           </span>
           <div className="flex flex-col items-center md:items-end gap-2">
@@ -108,7 +110,7 @@ function App() {
                 </span>
               </a>
             </div>
-            <div className="flex items-center gap-6 font-sans text-sm text-slate-500">
+            <div className="flex items-center gap-6 font-sans text-sm text-slate-400">
               <a href="#termos" className="hover:text-slate-300 transition-colors">Termos de Uso</a>
               <a href="#privacidade" className="hover:text-slate-300 transition-colors">Privacidade</a>
             </div>
