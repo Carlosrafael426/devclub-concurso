@@ -7,7 +7,6 @@ import { Equipe } from './components/devclub/Equipe';
 import { Empresas } from './components/devclub/Empresas';
 import { CTAFinal } from './components/devclub/CTAFinal';
 import { NetworkBackground } from './components/devclub/NetworkBackground';
-import { Cursor } from './components/ui/Cursor';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { Intro } from './components/devclub/Intro';
 import { Logo } from './components/ui/Logo';
@@ -47,7 +46,6 @@ function App() {
       >
         <NetworkBackground />
         <ScrollProgress />
-        <Cursor />
         <Navbar />
 
         <main>

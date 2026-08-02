@@ -111,7 +111,7 @@ export const Navbar: React.FC = () => {
 
         {/* Botão de Ação Desktop */}
         <div className="hidden md:flex items-center">
-          <ButtonPrimary href="#inscricao" magnetic={false}>
+          <ButtonPrimary href="#inscricao">
             Quero ser dev
           </ButtonPrimary>
         </div>
@@ -150,7 +150,7 @@ export const Navbar: React.FC = () => {
           >
             Equipe
           </a>
-          <ButtonPrimary href="#inscricao" magnetic={false} className="w-full justify-center" onClick={() => setIsOpen(false)}>
+          <ButtonPrimary href="#inscricao" className="w-full justify-center" onClick={() => setIsOpen(false)}>
             Quero ser dev
           </ButtonPrimary>
         </div>

@@ -1,6 +1,5 @@
 import { Check } from 'lucide-react';
 import { Reveal } from '../ui/Reveal';
-import { TiltCard } from '../ui/TiltCard';
 import { Counter } from '../ui/Counter';
 import { STAGGER } from '../../lib/motion';
 import { MatrixTextReveal } from './MatrixTextReveal';
@@ -43,15 +42,14 @@ const CODE_LINES: CodeLine[] = [
  * Mockup "editor + terminal" do Hero. Antes era decoração 100% estática;
  * agora as linhas de código revelam em stagger ao entrar em viewport e a
  * linha sob o cursor se destaca (as demais saem de foco) — o terminal
- * ganha vida em vez de só ilustrar. O tilt 3D vem do <TiltCard/> genérico
- * e os contadores do rodapé usam o <Counter/> unificado (antes duplicado
- * manualmente aqui e em Alunos.tsx).
+ * ganha vida em vez de só ilustrar. Os contadores do rodapé usam o
+ * <Counter/> unificado (antes duplicado manualmente aqui e em Alunos.tsx).
  */
 export function HeroTerminal() {
   return (
     <>
       <MatrixTextReveal className="hidden sm:block" />
-      <TiltCard className="relative z-10 w-full max-w-[500px]">
+      <div className="relative z-10 w-full max-w-[500px]">
         <div className="rounded-card border border-white/10 bg-black-normal/90 backdrop-blur-xl shadow-[0_0_100px_rgba(57, 211, 83, 0.12)] overflow-hidden">
           {/* Barra de título estilo editor de código */}
           <div className="flex items-center justify-between px-5 py-3 border-b border-white/5 bg-white/[0.02]">
@@ -102,7 +100,7 @@ export function HeroTerminal() {
           <span className="w-2 h-2 rounded-full bg-green-normal animate-pulse" />
           <span className="text-xs font-semibold text-white">9 vagas hoje</span>
         </div>
-      </TiltCard>
+      </div>
     </>
   );
 }
