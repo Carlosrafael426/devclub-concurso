@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import { gsap, ScrollTrigger, SplitText } from '../../lib/gsap';
-import { DURATION, EASE, STAGGER, DISTANCE } from '../../lib/motion';
+import { EASE, STAGGER, DISTANCE } from '../../lib/motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { Logo } from '../ui/Logo';
 
@@ -132,15 +132,25 @@ export function Intro() {
         },
       });
 
+      // Orçamento de duração da Fase A: ≤1.6s desktop / ≤1.1s mobile
+      // (critério de aceite) — cada etapa abaixo foi somada à mão para
+      // garantir que a timeline inteira (rects + wordmark + hint, com as
+      // sobreposições) nunca estoure esse teto.
+      const rectDuration = isMobile ? 0.3 : 0.4;
+      const rectStagger = isMobile ? 0.006 : STAGGER.modules;
+      const wordDuration = isMobile ? 0.45 : 0.6;
+      const wordStagger = isMobile ? 0.02 : 0.025;
+      const hintDuration = isMobile ? 0.3 : 0.4;
+
       // 1. Os 48 módulos se montam em ordem aleatória — materialização do
       // glifo, não leitura de progresso (from:"start" leria como
       // carregamento sequencial).
       tl.to(rects, {
         scale: 1,
         opacity: 1,
-        duration: isMobile ? 0.35 : 0.5,
+        duration: rectDuration,
         ease: EASE.back,
-        stagger: { each: STAGGER.modules, from: 'random' },
+        stagger: { each: rectStagger, from: 'random' },
       });
 
       // 2. Wordmark revela por caracteres com máscara — sobreposto ao fim
@@ -150,15 +160,15 @@ export function Intro() {
         {
           yPercent: 0,
           opacity: 1,
-          duration: DURATION.reveal,
+          duration: wordDuration,
           ease: EASE.expo,
-          stagger: STAGGER.chars,
+          stagger: wordStagger,
         },
-        isMobile ? '-=0.15' : '-=0.25'
+        isMobile ? '-=0.2' : '-=0.35'
       );
 
       // 3. Indicador de scroll.
-      tl.to(hintEl, { opacity: 1, y: 0, duration: 0.5, ease: EASE.out }, '-=0.3');
+      tl.to(hintEl, { opacity: 1, y: 0, duration: hintDuration, ease: EASE.out }, isMobile ? '-=0.15' : '-=0.25');
     };
 
     const timeout = new Promise<void>((resolve) => window.setTimeout(resolve, MAX_FONT_WAIT_MS));
