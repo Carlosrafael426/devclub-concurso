@@ -3,7 +3,12 @@ import { Reveal } from '../ui/Reveal';
 import { DISTANCE } from '../../lib/motion';
 /**
  * Equipe - Seção de mentores e time de suporte técnico do DevClub.
- * Mostra os mentores, suas experiências anteriores e links de redes profissionais.
+ * Hover cinematográfico: foto em grayscale por padrão, ganha cor no hover
+ * e a bio desliza de baixo para cima via clip-path — nome/cargo continuam
+ * sempre legíveis (legenda fixa) para não depender do hover em touch. Era
+ * a seção com menos interatividade da página (nenhum hover de card antes).
+ * O tilt 3D sutil fica para a Fase 4, quando existir o <TiltCard/> genérico
+ * (reaproveitado do mesmo mecanismo hoje hardcoded no Hero).
  */
 export const Equipe: React.FC = () => {
   const time = [
@@ -11,7 +16,7 @@ export const Equipe: React.FC = () => {
       name: "Rodolfo Mori",
       role: "Fundador & Mentor Principal",
       bio: "Ex-metalúrgico que migrou para a tecnologia há mais de 10 anos. Já atuou como Engenheiro de Software sênior em grandes multinacionais brasileiras e americanas. Criou o DevClub para democratizar o ensino de programação real.",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200&h=200",
+      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=500&h=650",
       github: "https://github.com",
       linkedin: "https://linkedin.com",
       site: "https://devclub.com.br"
@@ -20,7 +25,7 @@ export const Equipe: React.FC = () => {
       name: "Alexandre Reis",
       role: "Co-fundador & Tech Lead",
       bio: "Especialista em arquitetura de microsserviços Node.js e computação em nuvem (AWS). Lidera o desenvolvimento da plataforma do aluno do DevClub e garante que a infraestrutura técnica ensinada esteja sempre atualizada.",
-      image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200&h=200",
+      image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=500&h=650",
       github: "https://github.com",
       linkedin: "https://linkedin.com",
       site: ""
@@ -29,7 +34,7 @@ export const Equipe: React.FC = () => {
       name: "Gabriela Vasconcelos",
       role: "Coordenadora de Suporte ao Aluno",
       bio: "Especialista em Front-end React. Lidera o time de monitores que responde as dúvidas dos alunos em menos de 10 minutos. Focada em auxiliar nas dúvidas de códigos e desafios de portfólio prático.",
-      image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200&h=200",
+      image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=500&h=650",
       github: "https://github.com",
       linkedin: "https://linkedin.com",
       site: ""
@@ -38,9 +43,6 @@ export const Equipe: React.FC = () => {
 
   return (
     <section id="equipe" className="relative py-20 sm:py-24 bg-brand-surface/50 border-t border-white/[0.03] overflow-hidden">
-      {/* Glow de fundo */}
-      <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] rounded-full green-glow opacity-25 pointer-events-none" />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* Título da Seção */}
@@ -49,10 +51,7 @@ export const Equipe: React.FC = () => {
             QUEM VAI TE CONDUZIR
           </Reveal>
           <Reveal as="h2" split="words" delay={0.1} className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white mt-3">
-            Apoiado por quem vive da
-            <span className="bg-gradient-to-r from-brand-green via-brand-green-light to-brand-purple bg-clip-text text-transparent">
-              <br /> tecnologia no dia a dia
-            </span>
+            Apoiado por quem vive da <br /> tecnologia no dia a dia
           </Reveal>
           <Reveal as="p" y={DISTANCE.sm} delay={0.25} className="font-sans text-slate-400 mt-4 text-base sm:text-lg">
             Nossos mentores não ensinam apenas teoria acadêmica. Eles trazem a vivência das maiores empresas e os segredos práticos do desenvolvimento comercial.
@@ -64,33 +63,32 @@ export const Equipe: React.FC = () => {
           {time.map((mentor, idx) => (
             <div
               key={idx}
-              className="p-6 sm:p-8 rounded-xl glass-panel flex flex-col items-center text-center gap-6"
+              className="group rounded-xl glass-panel overflow-hidden flex flex-col"
             >
-              {/* Imagem do Mentor */}
-              <div className="relative">
+              {/* Foto cinematográfica: grayscale -> cor no hover, bio revelada por clip-path */}
+              <div className="relative aspect-[3/4] overflow-hidden">
                 <img
                   src={mentor.image}
                   alt={mentor.name}
-                  className="w-28 h-28 sm:w-32 sm:h-32 rounded-lg object-cover border-2 border-white/[0.05]"
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute inset-0 w-full h-full object-cover grayscale scale-[1.04] transition-all duration-500 ease-out group-hover:grayscale-0 group-hover:scale-100"
                 />
-              </div>
-
-              {/* Detalhes do Mentor */}
-              <div>
-                <h3 className="font-display font-extrabold text-xl text-white">
-                  {mentor.name}
-                </h3>
-                <span className="text-xs font-semibold text-brand-purple-light block mt-1 uppercase tracking-wider">
-                  {mentor.role}
-                </span>
-                <div className="mx-auto mt-2 h-px w-16 bg-gradient-to-r from-transparent via-brand-green/70 to-transparent" />
-                <p className="font-sans text-sm text-slate-400 mt-4 leading-relaxed">
-                  {mentor.bio}
-                </p>
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent px-5 pt-14 pb-4">
+                  <h3 className="font-display font-extrabold text-lg text-white">{mentor.name}</h3>
+                  <span className="text-[11px] font-semibold text-brand-purple-light uppercase tracking-wider">
+                    {mentor.role}
+                  </span>
+                </div>
+                <div className="absolute inset-0 flex items-end bg-black/85 p-5 [clip-path:inset(100%_0_0_0)] transition-[clip-path] duration-500 ease-out group-hover:[clip-path:inset(0_0_0_0)]">
+                  <p className="font-sans text-sm text-slate-200 leading-relaxed">
+                    {mentor.bio}
+                  </p>
+                </div>
               </div>
 
               {/* Redes Sociais com ícones SVG inline */}
-              <div className="flex items-center gap-4 mt-2">
+              <div className="flex items-center justify-center gap-4 py-5">
                 <a
                   href={mentor.github}
                   target="_blank"

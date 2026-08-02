@@ -15,6 +15,7 @@ export const Alunos: React.FC = () => {
   const [statsVisible, setStatsVisible] = useState(false);
   const [stats, setStats] = useState({ employability: 0, salary: 0, vacancies: 0 });
   const reducedMotion = useReducedMotion();
+  const photoRefs = useRef<(HTMLImageElement | null)[]>([]);
   // Lista fictícia baseada em casos reais de transição de carreira comuns no DevClub
   const depoimentos = [
     {
@@ -23,7 +24,7 @@ export const Alunos: React.FC = () => {
       newJob: "Desenvolvedor Front-end Júnior",
       company: "Softplan",
       quote: '"Eu não sabia nada de programação. Estudava nas pausas das corridas. O suporte individual e as mentorias do DevClub me deram a segurança para encarar o processo seletivo e passar na minha primeira vaga em 7 meses."',
-      image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=120&h=120"
+      image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=600&h=750"
     },
     {
       name: "Juliana Santos",
@@ -31,7 +32,7 @@ export const Alunos: React.FC = () => {
       newJob: "Desenvolvedora Full Stack",
       company: "Arezzo&Co",
       quote: '"A didática prática do DevClub foi essencial. Criar projetos reais idênticos aos de grandes empresas me destacou no LinkedIn. Hoje trabalho home office com um salário que eu nunca imaginei ganhar."',
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120&h=120"
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=600&h=750"
     },
     {
       name: "Rodrigo Almeida",
@@ -39,7 +40,7 @@ export const Alunos: React.FC = () => {
       newJob: "Desenvolvedor Node.js",
       company: "Zup Innovation",
       quote: '"Estava cansado de trabalhar aos domingos e feriados. Decidi migrar para a área de tecnologia. O acompanhamento dos tutores do DevClub para tirar dúvidas diárias foi o diferencial para eu não desistir no meio do caminho."',
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120&h=120"
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600&h=750"
     }
   ];
 
@@ -63,6 +64,26 @@ export const Alunos: React.FC = () => {
       },
     });
     return () => trigger.kill();
+  }, [reducedMotion]);
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    const ctx = gsap.context(() => {
+      photoRefs.current.forEach((img) => {
+        if (!img) return;
+        gsap.to(img, {
+          yPercent: 10,
+          ease: EASE.scrub,
+          scrollTrigger: {
+            trigger: img.parentElement,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+      });
+    });
+    return () => ctx.revert();
   }, [reducedMotion]);
 
   useEffect(() => {
@@ -94,9 +115,6 @@ export const Alunos: React.FC = () => {
 
   return (
     <section id="alunos" className="relative py-20 sm:py-24 bg-brand-bg/85 overflow-hidden">
-      {/* Luz difusa de fundo */}
-      <div className="absolute bottom-10 right-10 w-[500px] h-[500px] rounded-full green-glow opacity-20 pointer-events-none" />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* Título da Seção */}
@@ -105,46 +123,57 @@ export const Alunos: React.FC = () => {
             HISTÓRIAS DE SUCESSO
           </Reveal>
           <Reveal as="h2" split="words" delay={0.1} className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white mt-3">
-            Quem vivenciou o método <span className="bg-gradient-to-r from-brand-green via-brand-green-light to-brand-purple bg-clip-text text-transparent">
-              <br /> na prática
-            </span>
+            Quem vivenciou o método <br /> na prática
           </Reveal>
           <Reveal as="p" y={DISTANCE.sm} delay={0.25} className="font-sans text-slate-400 mt-4 text-base sm:text-lg">
             Veja a transformação de pessoas que começaram do zero absoluto e hoje constroem carreiras consolidadas nas maiores empresas de tecnologia do país.
           </Reveal>
         </div>
 
-        {/* Depoimentos */}
-        <Reveal as="div" stagger delay={0.35} className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8">
-          {depoimentos.map((depoimento, idx) => (
-            <div
-              key={idx}
-              className="relative p-6 sm:p-8 rounded-xl glass-panel flex flex-col justify-between gap-8 hover:scale-[1.01] transition-transform duration-300"
-            >
-              <p className="font-sans text-slate-300 italic leading-relaxed relative z-10">
-                {depoimento.quote}
-              </p>
+        {/* Depoimentos — editorial assimétrico: foto grande alternando de
+            lado a cada linha, em vez do grid 3 colunas repetido em todas as
+            seções. A foto grande substitui o avatar pequeno de antes. */}
+        <div className="flex flex-col gap-16 sm:gap-24">
+          {depoimentos.map((depoimento, idx) => {
+            const flip = idx % 2 === 1;
+            return (
+              <Reveal
+                key={idx}
+                as="div"
+                y={DISTANCE.md}
+                className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-14 items-center"
+              >
+                <div className={`relative overflow-hidden rounded-xl aspect-[4/5] lg:aspect-[4/3] ${flip ? 'lg:order-2' : ''}`}>
+                  <img
+                    ref={(el) => {
+                      photoRefs.current[idx] = el;
+                    }}
+                    src={depoimento.image}
+                    alt={depoimento.name}
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-x-0 -top-[10%] w-full h-[120%] object-cover"
+                  />
+                </div>
 
-              {/* Informações do Aluno */}
-              <div className="flex items-center gap-4">
-                <img
-                  src={depoimento.image}
-                  alt={depoimento.name}
-                  className="w-12 h-12 rounded-full object-cover border border-white/[0.1] flex-shrink-0"
-                />
-                <div className="min-w-0 flex-1">
-                  <h4 className="font-display font-bold text-sm text-white">{depoimento.name}</h4>
-                  <div className="flex flex-col text-xs text-slate-400 mt-0.5 break-words">
-                    <span className="text-brand-purple-light font-medium">{depoimento.oldJob}</span>
-                    <span className="text-brand-green font-semibold mt-0.5">
-                      {depoimento.newJob} @ {depoimento.company}
-                    </span>
+                <div className={`flex flex-col gap-6 ${flip ? 'lg:order-1' : ''}`}>
+                  <p className="font-sans text-lg sm:text-xl text-slate-300 italic leading-relaxed">
+                    {depoimento.quote}
+                  </p>
+                  <div>
+                    <h4 className="font-display font-bold text-base text-white">{depoimento.name}</h4>
+                    <div className="flex flex-col text-sm text-slate-400 mt-1">
+                      <span className="text-brand-purple-light font-medium">{depoimento.oldJob}</span>
+                      <span className="text-brand-green font-semibold mt-0.5">
+                        {depoimento.newJob} @ {depoimento.company}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
-        </Reveal>
+              </Reveal>
+            );
+          })}
+        </div>
 
         <div ref={statsRef} className="mt-12 sm:mt-20 p-6 sm:p-8 rounded-xl glass-panel flex flex-col md:flex-row justify-around items-center gap-6 sm:gap-8 text-center md:text-left">
           <div>

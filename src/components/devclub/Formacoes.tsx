@@ -60,7 +60,6 @@ export const Formacoes: React.FC = () => {
   return (
     <section id="formacoes" className="relative py-20 sm:py-24 bg-brand-surface/50 border-t border-white/[0.03] overflow-hidden">
       <div className="absolute inset-0 bg-grid-pattern pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full purple-glow opacity-30 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
@@ -68,9 +67,7 @@ export const Formacoes: React.FC = () => {
             CONTEÚDO PROGRAMÁTICO
           </Reveal>
           <Reveal as="h2" split="words" delay={0.1} className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white mt-3">
-            O mapa de estudos para te levar ao <span className="bg-gradient-to-r from-brand-green via-brand-green-light to-brand-purple bg-clip-text text-transparent">
-              primeiro emprego dev
-            </span>
+            O mapa de estudos para te levar ao primeiro emprego dev
           </Reveal>
           <Reveal as="p" y={DISTANCE.sm} delay={0.25} className="font-sans text-slate-400 mt-4 text-base sm:text-lg">
             Da base até as ferramentas mais exigidas pelo mercado de trabalho, com foco 100% prático e focado no que as empresas contratam.

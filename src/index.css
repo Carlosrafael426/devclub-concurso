@@ -89,23 +89,6 @@
 }
 
 /* ==============================
-   MARQUEE: Faixa infinita de logos
-   ============================== */
-@keyframes marquee-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.animate-marquee {
-  animation: marquee-scroll 40s linear infinite;
-}
-
-/* Pausa no hover para melhor leitura */
-.marquee-wrapper:hover .animate-marquee {
-  animation-play-state: paused;
-}
-
-/* ==============================
    CURSOR PISCANTE DO TYPEWRITER
    ============================== */
 @keyframes blink-cursor {
