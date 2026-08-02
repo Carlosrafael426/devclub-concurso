@@ -88,7 +88,13 @@ export const Formacoes: React.FC = () => {
   ];
 
   return (
-    <section id="formacoes" className="relative py-20 sm:py-24 bg-black-normal/50 border-t border-white/[0.03] overflow-hidden">
+    <section id="formacoes" className="relative py-20 sm:py-24 bg-black-normal/50 border-t border-white/[0.03]">
+      {/* Sem overflow-hidden aqui: qualquer overflow != visible num
+          ancestral quebra position:sticky do painel à direita (o elemento
+          passa a "colar" nesse ancestral, que não tem scroll próprio, e
+          nunca gruda em lugar nenhum — o painel ficava estático mesmo
+          mudando o valor de `top`). O fundo em grid abaixo já é
+          absolute/inset-0, sem risco real de vazar. */}
       <div className="absolute inset-0 bg-grid-pattern pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from 'react';
-import { gsap, ScrollTrigger, SplitText } from '../../lib/gsap';
+import { gsap, SplitText } from '../../lib/gsap';
 import { EASE, STAGGER, DISTANCE } from '../../lib/motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { Logo } from '../ui/Logo';
@@ -8,26 +8,25 @@ const MAX_FONT_WAIT_MS = 1500;
 
 /**
  * Intro cinematográfica: roda em TODO carregamento/recarregamento de
- * página (decisão explícita do usuário — não é mais "uma vez por sessão"),
- * só desligada por `prefers-reduced-motion`. Navegação por âncora (`#id`)
- * não remonta este componente (SPA sem router), então não faz a intro
- * repetir sozinha no meio da mesma visita.
+ * página, só desligada por `prefers-reduced-motion`. A Fase B NÃO é mais
+ * amarrada a uma posição de scroll (scrub) — ela dispara uma única vez no
+ * primeiro gesto de rolagem/toque/tecla do usuário e toca como uma
+ * animação de duração fixa. É essa mudança que garante que a intro nunca
+ * "volte": não existe mais nenhum vínculo scroll-progresso↔timeline pra
+ * rolar pra trás. `overflow:hidden` no body cobre a espera pelo gesto +
+ * a própria Fase B inteira, então quando ela libera o scroll o documento
+ * já está exatamente no topo — sem spacer nenhum reservando distância de
+ * rolagem (o que também elimina de raiz a classe de bug de "espaço morto"
+ * que a versão anterior (spacer + scrub) podia introduzir).
  *
- * Ao carregar, só o logo (módulos se montando em ordem
- * aleatória — materialização, não barra de progresso) e o wordmark
- * abaixo dele. Ao rolar, uma única camada de profundidade: o logo recua
- * (escala para baixo + blur, nunca para cima — "câmera atravessando"
- * seria enérgico mas desorientador) enquanto o site emerge por trás. Não
- * usa a opção `pin` do ScrollTrigger: `#intro` já é `position:fixed` por
- * conta própria, então "prender" um elemento que nunca sai do viewport
- * seria redundante — o próprio `#intro-spacer` (100svh, fluxo normal) já
- * reserva a distância de scroll, e a camada fixa só precisa desaparecer
- * (opacity) no fim para revelar `#site`, que já rolou pra posição certa
- * por baixo dela.
+ * Ao carregar, só o logo (módulos se montando em ordem aleatória —
+ * materialização, não barra de progresso) e o wordmark abaixo dele. No
+ * primeiro scroll/toque/tecla, uma única camada de profundidade: o logo
+ * recua (escala para baixo + blur, nunca para cima — "câmera atravessando"
+ * seria enérgico mas desorientador) enquanto o site emerge por trás.
  */
 export function Intro() {
   const reducedMotion = useReducedMotion();
-  const spacerRef = useRef<HTMLDivElement | null>(null);
   const introRef = useRef<HTMLDivElement | null>(null);
   const logoRef = useRef<SVGSVGElement | null>(null);
   const wordRef = useRef<HTMLDivElement | null>(null);
@@ -36,12 +35,11 @@ export function Intro() {
   useLayoutEffect(() => {
     if (reducedMotion) return;
 
-    const spacer = spacerRef.current;
     const intro = introRef.current;
     const logoSvg = logoRef.current;
     const wordEl = wordRef.current;
     const hintEl = hintRef.current;
-    if (!spacer || !intro || !logoSvg || !wordEl || !hintEl) return;
+    if (!intro || !logoSvg || !wordEl || !hintEl) return;
 
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
     const rects = logoSvg.querySelectorAll('rect');
@@ -49,6 +47,7 @@ export function Intro() {
     let phaseBTween: gsap.core.Timeline | null = null;
     let split: SplitText | null = null;
     let cancelled = false;
+    let phaseBStarted = false;
 
     // Estado inicial escondido, aplicado de forma síncrona (useLayoutEffect,
     // antes do primeiro paint) — sem isto haveria um frame com tudo visível
@@ -57,34 +56,47 @@ export function Intro() {
     gsap.set(wordEl, { opacity: 0 });
     gsap.set(hintEl, { opacity: 0, y: DISTANCE.sm });
 
-    // Fase B: uma única ScrollTrigger com scrub controla a transição.
-    const setupPhaseB = () => {
-      if (cancelled) return;
+    // Trava o scroll real assim que a intro monta — libera só quando a
+    // Fase B (disparada pelo gesto do usuário) terminar. Sem isso o
+    // usuário poderia rolar o site de verdade por baixo do overlay antes
+    // mesmo da Fase A terminar.
+    document.body.style.overflow = 'hidden';
+
+    const onGesture = () => runPhaseB();
+    const onKeyGesture = (event: KeyboardEvent) => {
+      if ([' ', 'ArrowDown', 'PageDown', 'Enter'].includes(event.key)) runPhaseB();
+    };
+
+    const removeGestureListeners = () => {
+      window.removeEventListener('wheel', onGesture);
+      window.removeEventListener('touchstart', onGesture);
+      window.removeEventListener('keydown', onKeyGesture);
+    };
+
+    // Fase B: dispara uma única vez (primeiro gesto), toca como timeline
+    // de duração fixa — não redesenha em função de scroll, então não tem
+    // como "voltar" rolando pra cima depois de terminar.
+    const runPhaseB = () => {
+      if (cancelled || phaseBStarted) return;
+      phaseBStarted = true;
+      removeGestureListeners();
+
       const site = document.getElementById('site');
       const navLogo = document.getElementById('nav-logo-icon');
 
       const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: spacer,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 1,
-          invalidateOnRefresh: true,
+        defaults: { ease: EASE.out },
+        onComplete: () => {
+          document.body.style.overflow = '';
         },
-        defaults: { ease: EASE.scrub },
       });
 
-      tl.to(hintEl, { opacity: 0, y: DISTANCE.sm, duration: 0.12 }, 0);
-      tl.to(wordEl, { opacity: 0, y: -DISTANCE.md, duration: 0.35 }, 0);
+      tl.to(hintEl, { opacity: 0, y: DISTANCE.sm, duration: 0.25 }, 0);
+      tl.to(wordEl, { opacity: 0, y: -DISTANCE.md, duration: 0.4 }, 0);
       tl.to(
         logoSvg,
-        {
-          scale: 0.28,
-          opacity: 0,
-          filter: isMobile ? 'none' : 'blur(6px)',
-          duration: 0.62,
-        },
-        0.08
+        { scale: 0.28, opacity: 0, filter: isMobile ? 'none' : 'blur(6px)', duration: 0.7 },
+        0.05
       );
       if (site) {
         tl.fromTo(
@@ -94,7 +106,7 @@ export function Intro() {
             opacity: 1,
             scale: 1,
             y: 0,
-            duration: 0.7,
+            duration: 0.8,
             // Sem isso o GSAP deixa `transform: matrix(...)` (mesmo em
             // identidade) como inline style pro resto da sessão — qualquer
             // valor de transform diferente de "none" vira containing block
@@ -103,25 +115,19 @@ export function Intro() {
             // travado no viewport.
             clearProps: 'transform',
           },
-          0.3
+          0.25
         );
       }
       if (navLogo) {
-        tl.fromTo(navLogo, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.55);
+        tl.fromTo(navLogo, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.5);
       }
-      tl.to(intro, { opacity: 0, duration: 0.2 }, 0.78);
+      tl.to(intro, { opacity: 0, duration: 0.3 }, 0.85);
 
       phaseBTween = tl;
-      // O refresh global de main.tsx dispara em document.fonts.ready, que é
-      // ANTES desta ScrollTrigger existir (só é criada aqui) — sem isto o
-      // cálculo de distância ficaria baseado num layout desatualizado.
-      ScrollTrigger.refresh();
     };
 
     const runPhaseA = () => {
       if (cancelled) return;
-
-      document.body.style.overflow = 'hidden';
 
       split = new SplitText(wordEl, { type: 'lines,chars', linesClass: 'line-mask' });
       gsap.set(split.chars, { yPercent: 110, opacity: 0 });
@@ -129,8 +135,11 @@ export function Intro() {
 
       const tl = gsap.timeline({
         onComplete: () => {
-          document.body.style.overflow = '';
-          setupPhaseB();
+          // Só a partir daqui o primeiro gesto do usuário pode revelar o
+          // site — antes disso, rolar/tocar não faz nada.
+          window.addEventListener('wheel', onGesture, { passive: true });
+          window.addEventListener('touchstart', onGesture, { passive: true });
+          window.addEventListener('keydown', onKeyGesture);
         },
       });
 
@@ -179,7 +188,7 @@ export function Intro() {
     return () => {
       cancelled = true;
       document.body.style.overflow = '';
-      phaseBTween?.scrollTrigger?.kill();
+      removeGestureListeners();
       phaseBTween?.kill();
       split?.revert();
     };
@@ -188,22 +197,21 @@ export function Intro() {
   if (reducedMotion) return null;
 
   return (
-    <div ref={spacerRef} className="relative h-[100svh]" aria-hidden="true">
-      <div
-        ref={introRef}
-        className="pointer-events-none fixed inset-0 z-[100] flex flex-col items-center justify-center gap-6 bg-black-dark"
-      >
-        <div className="flex flex-col items-center gap-6">
-          <Logo ref={logoRef} size={200} color="green" />
-          <div ref={wordRef} className="overflow-hidden">
-            <span className="font-display font-normal text-3xl sm:text-4xl text-white">DevClub</span>
-          </div>
+    <div
+      ref={introRef}
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-0 z-[100] flex flex-col items-center justify-center gap-6 bg-black-dark"
+    >
+      <div className="flex flex-col items-center gap-6">
+        <Logo ref={logoRef} size={200} color="green" />
+        <div ref={wordRef} className="overflow-hidden">
+          <span className="font-display font-normal text-3xl sm:text-4xl text-white">DevClub</span>
         </div>
+      </div>
 
-        <div ref={hintRef} className="absolute bottom-10 flex flex-col items-center gap-2 text-gray-300">
-          <span className="font-mono text-xs uppercase tracking-widest">role para entrar_</span>
-          <span className="h-6 w-px bg-green-normal animate-intro-hint" aria-hidden="true" />
-        </div>
+      <div ref={hintRef} className="absolute bottom-10 flex flex-col items-center gap-2 text-gray-300">
+        <span className="font-mono text-xs uppercase tracking-widest">role para entrar_</span>
+        <span className="h-6 w-px bg-green-normal animate-intro-hint" aria-hidden="true" />
       </div>
     </div>
   );
