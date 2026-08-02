@@ -10,6 +10,7 @@ import { NetworkBackground } from './components/devclub/NetworkBackground';
 import { Cursor } from './components/ui/Cursor';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { Preloader } from './components/ui/Preloader';
+import { Logo } from './components/ui/Logo';
 import { initSmoothScroll } from './lib/lenis';
 import { useReducedMotion } from './hooks/useReducedMotion';
 
@@ -50,26 +51,7 @@ function App() {
       <footer className="relative z-10 py-10 sm:py-12 border-t border-white/5 bg-black-dark/90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div className="flex items-center select-none">
-            <svg className="w-8 h-8 drop-shadow-[0_0_8px_rgba(57, 211, 83, 0.2)]" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="4" y="4" width="12" height="12" rx="2.5" stroke="#39D353" strokeWidth="2.5" />
-              <rect x="7.5" y="7.5" width="5" height="5" rx="1" fill="#39D353" />
-              <rect x="24" y="4" width="12" height="12" rx="2.5" stroke="#39D353" strokeWidth="2.5" />
-              <rect x="27.5" y="7.5" width="5" height="5" rx="1" fill="#39D353" />
-              <rect x="4" y="24" width="12" height="12" rx="2.5" stroke="#39D353" strokeWidth="2.5" />
-              <rect x="7.5" y="27.5" width="5" height="5" rx="1" fill="#39D353" />
-              <rect x="19.5" y="7.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="19.5" y="12" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="19.5" y="19.5" width="5" height="5" rx="1" fill="#39D353" />
-              <rect x="7.5" y="19.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="12" y="19.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="26.5" y="19.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="31" y="19.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="19.5" y="26.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="26.5" y="26.5" width="5" height="5" rx="1" fill="#39D353" />
-              <rect x="19.5" y="32.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="24" y="32.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="29.5" y="32.5" width="5" height="5" rx="1" fill="#39D353" />
-            </svg>
+            <Logo size={32} color="green" className="drop-shadow-[0_0_8px_rgba(57, 211, 83, 0.2)]" />
           </div>
           <span className="font-sans text-sm text-gray-300">
             &copy; {new Date().getFullYear()} DevClub. Todos os direitos reservados.

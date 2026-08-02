@@ -4,6 +4,7 @@ import { gsap, ScrollTrigger } from '../../lib/gsap';
 import { EASE } from '../../lib/motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
+import { Logo } from '../ui/Logo';
 
 const NAV_SECTIONS = [
   { id: 'formacoes', label: 'Formações' },
@@ -67,40 +68,18 @@ export const Navbar: React.FC = () => {
       <div ref={bgRef} className="absolute inset-0 border-b border-[rgba(218,255,245,0.2)] bg-[rgba(218,255,245,0.05)] backdrop-blur-md opacity-0" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
 
-        {/* Logo DevClub (Apenas o Ícone estilo QR-Code Verde com link para o topo/hero) */}
+        {/* Logo DevClub — aparece perto do fim da intro cinematográfica
+            (Fase B), criando continuidade de objeto com o logo grande que
+            some: o usuário entende que a marca "foi para lá", em vez de só
+            sumir e reaparecer sem relação. */}
         <div className="flex items-center select-none">
           <a href="#hero" className="cursor-pointer hover:scale-110 hover:drop-shadow-[0_0_20px_rgba(57, 211, 83, 0.5)] transition-all duration-300" aria-label="Voltar para o topo">
-            <svg className="w-11 h-11 drop-shadow-[0_0_12px_rgba(57, 211, 83, 0.3)]" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              {/* Finder Pattern - Superior Esquerdo */}
-              <rect x="4" y="4" width="12" height="12" rx="2.5" stroke="#39D353" strokeWidth="2.5" />
-              <rect x="7.5" y="7.5" width="5" height="5" rx="1" fill="#39D353" />
-
-              {/* Finder Pattern - Superior Direito */}
-              <rect x="24" y="4" width="12" height="12" rx="2.5" stroke="#39D353" strokeWidth="2.5" />
-              <rect x="27.5" y="7.5" width="5" height="5" rx="1" fill="#39D353" />
-
-              {/* Finder Pattern - Inferior Esquerdo */}
-              <rect x="4" y="24" width="12" height="12" rx="2.5" stroke="#39D353" strokeWidth="2.5" />
-              <rect x="7.5" y="27.5" width="5" height="5" rx="1" fill="#39D353" />
-
-              {/* Pixels de dados espalhados representativos do QR Code */}
-              <rect x="19.5" y="7.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="19.5" y="12" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="19.5" y="19.5" width="5" height="5" rx="1" fill="#39D353" />
-
-              <rect x="7.5" y="19.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="12" y="19.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-
-              <rect x="26.5" y="19.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="31" y="19.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-
-              <rect x="19.5" y="26.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="26.5" y="26.5" width="5" height="5" rx="1" fill="#39D353" />
-
-              <rect x="19.5" y="32.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="24" y="32.5" width="2.5" height="2.5" rx="0.5" fill="#39D353" />
-              <rect x="29.5" y="32.5" width="5" height="5" rx="1" fill="#39D353" />
-            </svg>
+            <Logo
+              id="nav-logo-icon"
+              size={44}
+              color="green"
+              className="opacity-0 drop-shadow-[0_0_12px_rgba(57, 211, 83, 0.3)]"
+            />
           </a>
         </div>
 
