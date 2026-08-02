@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { gsap, ScrollTrigger } from '../../lib/gsap';
-import { EASE } from '../../lib/motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { ButtonPrimary } from '../ui/ButtonPrimary';
 import { Logo } from '../ui/Logo';
@@ -14,11 +13,12 @@ const NAV_SECTIONS = [
 
 /**
  * Navbar - Componente de navegação superior responsivo.
- * Antes era 100% estática (sem nenhuma lógica de scroll); agora o fundo
- * ganha opacidade progressiva nos primeiros 120px de scroll (scrub,
- * ease:none) em vez de aparecer/sumir bruscamente, e um indicador de seção
- * ativa acompanha o scroll via ScrollTrigger.toggleClass — sem nunca
- * esconder o header, que é uma affordance de navegação permanente.
+ * Fica sempre fixo e sempre visível — nunca esconde ao rolar, que
+ * removeria uma affordance de navegação sem ganho real. O que muda com o
+ * scroll é só a cor do fundo (rgba interpolado direto por frame, piso
+ * mínimo de .02 pra nunca ficar 100% transparente) e a opacidade da borda
+ * inferior; um indicador de seção ativa acompanha via
+ * ScrollTrigger.toggleClass.
  */
 export const Navbar: React.FC = () => {
   // Estado para controlar a abertura/fechamento do menu mobile
@@ -30,18 +30,28 @@ export const Navbar: React.FC = () => {
   useEffect(() => {
     const ctx = gsap.context(() => {
       if (bgRef.current) {
+        const bg = bgRef.current;
         if (reducedMotion) {
-          gsap.set(bgRef.current, { opacity: 1 });
+          bg.style.backgroundColor = 'rgba(218, 255, 245, 0.08)';
+          bg.style.borderBottomColor = 'rgba(218, 255, 245, 0.2)';
         } else {
-          gsap.fromTo(
-            bgRef.current,
-            { opacity: 0 },
-            {
-              opacity: 1,
-              ease: EASE.scrub,
-              scrollTrigger: { trigger: document.documentElement, start: 'top top', end: '+=120', scrub: true },
-            }
-          );
+          // Interpola os canais rgba diretamente por frame de scroll (não
+          // a opacidade do elemento inteiro) para que o fundo nunca fique
+          // 100% transparente — sobra um piso mínimo de tingimento (.02)
+          // mesmo no topo, só não compete com o hero. Sem transition CSS
+          // aqui: é um valor amarrado a scroll, precisa seguir 1:1 o dedo
+          // do usuário (ease:none), uma transição suavizada criaria atraso.
+          const paint = (t: number) => {
+            bg.style.backgroundColor = `rgba(218, 255, 245, ${0.02 + t * 0.06})`;
+            bg.style.borderBottomColor = `rgba(218, 255, 245, ${t * 0.2})`;
+          };
+          paint(0);
+          ScrollTrigger.create({
+            trigger: document.documentElement,
+            start: 'top top',
+            end: '+=120',
+            onUpdate: (self) => paint(self.progress),
+          });
         }
       }
 
@@ -64,9 +74,9 @@ export const Navbar: React.FC = () => {
   }, [reducedMotion]);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50">
-      <div ref={bgRef} className="absolute inset-0 border-b border-[rgba(218,255,245,0.2)] bg-[rgba(218,255,245,0.05)] backdrop-blur-md opacity-0" />
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+    <nav className="fixed top-0 left-0 w-full z-40">
+      <div ref={bgRef} className="absolute inset-0 border-b backdrop-blur-md" />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 h-[72px] flex items-center justify-between">
 
         {/* Logo DevClub — aparece perto do fim da intro cinematográfica
             (Fase B), criando continuidade de objeto com o logo grande que
