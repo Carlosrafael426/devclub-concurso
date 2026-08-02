@@ -1,13 +1,12 @@
 import { Check } from 'lucide-react';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { Reveal } from '../ui/Reveal';
+import { DISTANCE } from '../../lib/motion';
 /**
  * CTAFinal - Seção de chamada para ação final com fundo dramático
  * Última seção da página, responsável por converter visitantes em alunos.
  * Layout cinematográfico com glow radial e indicadores de confiança.
  */
 export const CTAFinal = () => {
-  const { ref, isVisible } = useScrollAnimation(0.1);
-
   // Indicadores de confiança que reforçam a decisão de compra
   const garantias = [
     'Sem mensalidade escondida',
@@ -31,33 +30,30 @@ export const CTAFinal = () => {
       <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full green-glow opacity-20 pointer-events-none" />
 
       {/* Conteúdo principal */}
-      <div
-        ref={ref}
-        className={`max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 fade-up ${isVisible ? 'visible' : ''}`}
-      >
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
         {/* Eyebrow label */}
-        <span className="inline-flex items-center gap-2 font-sans font-bold text-xs tracking-widest text-brand-green uppercase mb-4">
+        <Reveal as="span" y={DISTANCE.sm} className="inline-flex items-center gap-2 font-sans font-bold text-xs tracking-widest text-brand-green uppercase mb-4">
           <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
           VAGAS COM LIMITE — TURMA ABRINDO AGORA
-        </span>
+        </Reveal>
 
         {/* Headline principal com destaque gradiente */}
-        <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-7xl tracking-tight text-white leading-[1.05] mb-4">
+        <Reveal as="h2" split="words" delay={0.1} className="font-display font-extrabold text-4xl sm:text-5xl md:text-7xl tracking-tight text-white leading-[1.05] mb-4">
           Sua carreira dev<br />
           <span className="bg-gradient-to-r from-brand-green via-brand-green-light to-brand-purple bg-clip-text text-transparent">
             começa aqui.
           </span>
-        </h2>
+        </Reveal>
 
         {/* Subtítulo */}
-        <p className="font-sans text-base sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8">
-          Mais de <strong className="text-white font-semibold">17.000 devs formados</strong>. 
-          Empresas esperando profissionais como você. 
+        <Reveal as="p" y={DISTANCE.sm} delay={0.25} className="font-sans text-base sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8">
+          Mais de <strong className="text-white font-semibold">17.000 devs formados</strong>.
+          Empresas esperando profissionais como você.
           Só falta um passo.
-        </p>
+        </Reveal>
 
         {/* CTA principal — destaque máximo */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+        <Reveal as="div" delay={0.35} className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
           <a
             href="https://www.devclub.com.br"
             target="_blank"
@@ -68,17 +64,17 @@ export const CTAFinal = () => {
               Quero minha vaga agora
             </span>
           </a>
-        </div>
+        </Reveal>
 
         {/* Indicadores de confiança */}
-        <ul className="flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-2.5 sm:gap-y-2">
+        <Reveal as="ul" stagger delay={0.45} className="flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-2.5 sm:gap-y-2">
           {garantias.map((garantia) => (
             <li key={garantia} className="flex items-center gap-2 font-sans text-xs sm:text-sm text-slate-500 text-left">
               <Check size={14} className="site-icon text-brand-green flex-shrink-0" />
               {garantia}
             </li>
           ))}
-        </ul>
+        </Reveal>
       </div>
     </section>
   );

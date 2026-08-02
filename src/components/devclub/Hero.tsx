@@ -1,6 +1,7 @@
 import { MessageSquare, Check } from 'lucide-react';
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { Reveal } from '../ui/Reveal';
+import { DISTANCE } from '../../lib/motion';
 import { MatrixTextReveal } from './MatrixTextReveal';
 
 type Token = { text: string; className?: string };
@@ -53,7 +54,6 @@ const AVATARS = [
  * mockup "editor + terminal" no lugar do antigo dashboard estático.
  */
 export const Hero: React.FC = () => {
-  const { ref, isVisible } = useScrollAnimation(0.15);
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayWord, setDisplayWord] = useState('');
   const [phase, setPhase] = useState<'typing' | 'deleting'>('typing');
@@ -124,12 +124,12 @@ export const Hero: React.FC = () => {
   };
 
   return (
-    <section id="hero" ref={ref} className={`relative min-h-screen pt-28 sm:pt-32 lg:pt-36 pb-14 sm:pb-18 flex items-center justify-center overflow-hidden fade-up ${isVisible ? 'visible' : ''}`}>
+    <section id="hero" className="relative min-h-screen pt-28 sm:pt-32 lg:pt-36 pb-14 sm:pb-18 flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-brand-bg pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-12 items-center relative z-10 w-full">
         <div className="lg:col-span-7 flex flex-col items-start text-left gap-6">
-          <div className="flex items-center gap-3 sm:gap-4 select-none">
+          <Reveal as="div" y={DISTANCE.sm} className="flex items-center gap-3 sm:gap-4 select-none">
             <div className="flex items-center -space-x-3 flex-shrink-0">
               {AVATARS.map((src, i) => (
                 <img
@@ -153,23 +153,23 @@ export const Hero: React.FC = () => {
                 Turma com vagas abertas
               </span>
             </div>
-          </div>
+          </Reveal>
 
-          <h1 className="font-display font-extrabold text-4xl sm:text-5xl md:text-7xl leading-[1.05] sm:leading-[1.1] tracking-tight text-white">
+          <Reveal as="h1" delay={0.1} y={DISTANCE.md} className="font-display font-extrabold text-4xl sm:text-5xl md:text-7xl leading-[1.05] sm:leading-[1.1] tracking-tight text-white">
             Torne-se um <br />
             <span className="min-h-[1.2em] inline-block bg-gradient-to-r from-brand-green via-brand-green-light to-brand-purple bg-clip-text text-transparent">
               {displayWord}
               <span className="typewriter-cursor" aria-hidden="true" />
             </span> <br />
             de verdade.
-          </h1>
+          </Reveal>
 
-          <p className="max-w-xl font-sans font-normal text-base sm:text-lg leading-relaxed text-slate-400">
+          <Reveal as="p" delay={0.25} y={DISTANCE.sm} className="max-w-xl font-sans font-normal text-base sm:text-lg leading-relaxed text-slate-400">
             O DevClub é a formação que mais coloca desenvolvedores no mercado no Brasil.
             Projetos reais, mentoria ativa e uma comunidade que não te deixa para trás.
-          </p>
+          </Reveal>
 
-          <div className="flex flex-wrap gap-2 sm:gap-3 pt-1">
+          <Reveal as="div" stagger delay={0.3} className="flex flex-wrap gap-2 sm:gap-3 pt-1">
             {['Mentoria ativa', 'Projetos reais', 'Comunidade 24/7'].map((item) => (
               <span
                 key={item}
@@ -178,9 +178,9 @@ export const Hero: React.FC = () => {
                 {item}
               </span>
             ))}
-          </div>
+          </Reveal>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto pt-1 sm:pt-2">
+          <Reveal as="div" delay={0.4} className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto pt-1 sm:pt-2">
             <a
               href="#formacoes"
               className="group flex items-center justify-center px-6 sm:px-8 py-3.5 sm:py-4 rounded-lg bg-brand-green text-[#111012] font-display font-extrabold text-base tracking-wide shadow-[0_8px_30px_rgba(57, 211, 83, 0.28)] hover:shadow-[0_14px_50px_rgba(57, 211, 83, 0.55)] hover:scale-[1.05] transition-all duration-500 ease-out w-full sm:w-auto cursor-pointer"
@@ -201,10 +201,10 @@ export const Hero: React.FC = () => {
                 Quero Falar com Consultor
               </span>
             </a>
-          </div>
+          </Reveal>
         </div>
 
-        <div className="lg:col-span-5 flex flex-col items-center lg:items-end justify-center relative min-h-[380px] gap-6 sm:gap-8">
+        <Reveal as="div" delay={0.2} y={DISTANCE.lg} className="lg:col-span-5 flex flex-col items-center lg:items-end justify-center relative min-h-[380px] gap-6 sm:gap-8">
           <MatrixTextReveal className="hidden sm:block" />
           <div
             ref={cardRef}
@@ -262,7 +262,7 @@ export const Hero: React.FC = () => {
               <span className="text-xs font-semibold text-white">9 vagas hoje</span>
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

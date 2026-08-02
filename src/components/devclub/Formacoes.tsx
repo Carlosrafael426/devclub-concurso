@@ -1,12 +1,12 @@
 import { ArrowRight, Code, Server, Database, Globe, Layers, Cpu } from 'lucide-react';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { Reveal } from '../ui/Reveal';
+import { DISTANCE } from '../../lib/motion';
 /**
  * Formacoes - Apresenta os módulos/tecnologias ensinados na formação do DevClub.
  * Utiliza cards com hover premium, ícones da biblioteca Lucide e gradientes de destaque.
+ * O grid de cards é provisório: vira uma trilha horizontal pinada na Fase 2.
  */
 export const Formacoes: React.FC = () => {
-  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation(0.2);
-  const { ref: cardsRef, isVisible: cardsVisible } = useScrollAnimation(0.2);
   // Lista fictícia de módulos/etapas da formação baseada no currículo real do DevClub
   const modulos = [
     {
@@ -53,25 +53,25 @@ export const Formacoes: React.FC = () => {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full purple-glow opacity-30 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div ref={titleRef} className={`text-center max-w-3xl mx-auto mb-12 sm:mb-16 fade-up ${titleVisible ? 'visible' : ''}`}>
-          <span className="font-sans font-bold text-[11px] sm:text-xs tracking-widest text-brand-green uppercase">
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <Reveal as="span" y={DISTANCE.sm} className="block font-sans font-bold text-[11px] sm:text-xs tracking-widest text-brand-green uppercase">
             CONTEÚDO PROGRAMÁTICO
-          </span>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white mt-3">
+          </Reveal>
+          <Reveal as="h2" split="words" delay={0.1} className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white mt-3">
             O mapa de estudos para te levar ao <span className="bg-gradient-to-r from-brand-green via-brand-green-light to-brand-purple bg-clip-text text-transparent">
               primeiro emprego dev
             </span>
-          </h2>
-          <p className="font-sans text-slate-400 mt-4 text-base sm:text-lg">
+          </Reveal>
+          <Reveal as="p" y={DISTANCE.sm} delay={0.25} className="font-sans text-slate-400 mt-4 text-base sm:text-lg">
             Da base até as ferramentas mais exigidas pelo mercado de trabalho, com foco 100% prático e focado no que as empresas contratam.
-          </p>
+          </Reveal>
         </div>
 
-        <div ref={cardsRef} className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 fade-up ${cardsVisible ? 'visible' : ''}`}>
+        <Reveal as="div" stagger delay={0.35} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {modulos.map((modulo, idx) => (
             <div
               key={idx}
-              className={`group p-6 sm:p-8 rounded-xl glass-panel hover:-translate-y-1 hover:border-brand-green/20 transition-all duration-300 flex flex-col justify-between gap-6 delay-${(idx % 6) + 1}00`}
+              className="group p-6 sm:p-8 rounded-xl glass-panel hover:-translate-y-1 hover:border-brand-green/20 transition-all duration-300 flex flex-col justify-between gap-6"
             >
               <div>
                 <div className="flex justify-between items-start mb-6">
@@ -96,7 +96,7 @@ export const Formacoes: React.FC = () => {
               </div>
             </div>
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

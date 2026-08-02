@@ -1,4 +1,5 @@
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { Reveal } from '../ui/Reveal';
+import { DISTANCE } from '../../lib/motion';
 /**
  * Empresas - Seção "Empresas que contratam nossos devs"
  * Cartões com selo/monograma da marca (cor oficial) + carrossel infinito.
@@ -36,25 +37,23 @@ const EMPRESAS: Empresa[] = [
 const EMPRESAS_DUPLICADAS = [...EMPRESAS, ...EMPRESAS];
 
 export const Empresas = () => {
-  const { ref, isVisible } = useScrollAnimation(0.2);
-
   return (
     <section id="empresas" className="relative py-20 sm:py-24 bg-brand-surface-light/85 border-y border-white/[0.03] overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] rounded-full purple-glow opacity-20 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div ref={ref} className={`text-center max-w-3xl mx-auto mb-12 sm:mb-16 fade-up ${isVisible ? 'visible' : ''}`}>
-          <span className="font-sans font-bold text-[11px] sm:text-xs tracking-widest text-brand-green uppercase">
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <Reveal as="span" y={DISTANCE.sm} className="block font-sans font-bold text-[11px] sm:text-xs tracking-widest text-brand-green uppercase">
             EMPRESAS PARCEIRAS
-          </span>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white mt-3">
+          </Reveal>
+          <Reveal as="h2" split="words" delay={0.1} className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white mt-3">
             Empresas que contratam<span className="bg-gradient-to-r from-brand-green via-brand-green-light to-brand-purple bg-clip-text text-transparent">
               <br />nossos devs
             </span>
-          </h2>
-          <p className="font-sans text-slate-400 mt-4 text-base sm:text-lg">
+          </Reveal>
+          <Reveal as="p" y={DISTANCE.sm} delay={0.25} className="font-sans text-slate-400 mt-4 text-base sm:text-lg">
             Nossos alunos já foram contratados por essas e outras grandes empresas de tecnologia do Brasil.
-          </p>
+          </Reveal>
         </div>
       </div>
 

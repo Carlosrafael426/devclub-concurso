@@ -81,31 +81,12 @@
 }
 
 /* ==============================
-   FADE-UP: Animações ao scroll
+   REVEAL: máscara de linha para o SplitText de <Reveal split="words">
    ============================== */
-
-/* Estado inicial: invisível e deslocado para baixo */
-.fade-up {
-  opacity: 0;
-  transform: translateY(40px) scale(0.985);
-  transition: 
-    opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1), 
-    transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+.line-mask {
+  overflow: hidden;
+  display: block;
 }
-
-/* Estado final: visível e na posição original */
-.fade-up.visible {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-/* Delays escalonados para cards entrarem em cascata */
-.delay-100 { transition-delay: 100ms; }
-.delay-200 { transition-delay: 180ms; }
-.delay-300 { transition-delay: 260ms; }
-.delay-400 { transition-delay: 340ms; }
-.delay-500 { transition-delay: 420ms; }
-.delay-600 { transition-delay: 500ms; }
 
 /* ==============================
    MARQUEE: Faixa infinita de logos
@@ -191,10 +172,5 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
-  }
-
-  .fade-up {
-    opacity: 1;
-    transform: none;
   }
 }

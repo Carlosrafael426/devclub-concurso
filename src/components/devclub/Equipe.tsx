@@ -1,12 +1,11 @@
 import { Globe } from 'lucide-react';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { Reveal } from '../ui/Reveal';
+import { DISTANCE } from '../../lib/motion';
 /**
  * Equipe - Seção de mentores e time de suporte técnico do DevClub.
  * Mostra os mentores, suas experiências anteriores e links de redes profissionais.
  */
 export const Equipe: React.FC = () => {
-  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation(0.2);
-  const { ref: cardsRef, isVisible: cardsVisible } = useScrollAnimation(0.2);
   const time = [
     {
       name: "Rodolfo Mori",
@@ -45,27 +44,27 @@ export const Equipe: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* Título da Seção */}
-        <div ref={titleRef} className={`text-center max-w-3xl mx-auto mb-12 sm:mb-16 fade-up ${titleVisible ? 'visible' : ''}`}>
-          <span className="font-sans font-bold text-[11px] sm:text-xs tracking-widest text-brand-green uppercase">
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <Reveal as="span" y={DISTANCE.sm} className="block font-sans font-bold text-[11px] sm:text-xs tracking-widest text-brand-green uppercase">
             QUEM VAI TE CONDUZIR
-          </span>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white mt-3">
+          </Reveal>
+          <Reveal as="h2" split="words" delay={0.1} className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white mt-3">
             Apoiado por quem vive da
             <span className="bg-gradient-to-r from-brand-green via-brand-green-light to-brand-purple bg-clip-text text-transparent">
               <br /> tecnologia no dia a dia
             </span>
-          </h2>
-          <p className="font-sans text-slate-400 mt-4 text-base sm:text-lg">
+          </Reveal>
+          <Reveal as="p" y={DISTANCE.sm} delay={0.25} className="font-sans text-slate-400 mt-4 text-base sm:text-lg">
             Nossos mentores não ensinam apenas teoria acadêmica. Eles trazem a vivência das maiores empresas e os segredos práticos do desenvolvimento comercial.
-          </p>
+          </Reveal>
         </div>
 
         {/* Grade de Mentores */}
-        <div ref={cardsRef} className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8 fade-up ${cardsVisible ? 'visible' : ''}`}>
+        <Reveal as="div" stagger delay={0.35} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
           {time.map((mentor, idx) => (
             <div
               key={idx}
-              className={`p-6 sm:p-8 rounded-xl glass-panel flex flex-col items-center text-center gap-6 delay-${(idx + 1) * 100}`}
+              className="p-6 sm:p-8 rounded-xl glass-panel flex flex-col items-center text-center gap-6"
             >
               {/* Imagem do Mentor */}
               <div className="relative">
@@ -128,7 +127,7 @@ export const Equipe: React.FC = () => {
               </div>
             </div>
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -1,13 +1,20 @@
-import { useEffect, useState } from 'react';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { useEffect, useRef, useState } from 'react';
+import { Reveal } from '../ui/Reveal';
+import { DISTANCE, DURATION, EASE } from '../../lib/motion';
+import { gsap, ScrollTrigger } from '../../lib/gsap';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 /**
  * Alunos - Seção de depoimentos e histórias de sucesso (cases reais)
  * Exibe alunos reais/fictícios que mudaram de carreira por meio do método DevClub.
+ * O contador de estatísticas ainda é manual aqui (vira <Counter/> na Fase 4,
+ * unificado com o contador hoje duplicado no Hero) — só o gatilho de
+ * visibilidade foi migrado de IntersectionObserver para ScrollTrigger.
  */
 export const Alunos: React.FC = () => {
-  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation(0.2);
-  const { ref: statsRef, isVisible: statsVisible } = useScrollAnimation(0.2);
+  const statsRef = useRef<HTMLDivElement | null>(null);
+  const [statsVisible, setStatsVisible] = useState(false);
   const [stats, setStats] = useState({ employability: 0, salary: 0, vacancies: 0 });
+  const reducedMotion = useReducedMotion();
   // Lista fictícia baseada em casos reais de transição de carreira comuns no DevClub
   const depoimentos = [
     {
@@ -37,6 +44,28 @@ export const Alunos: React.FC = () => {
   ];
 
   useEffect(() => {
+    const el = statsRef.current;
+    if (!el) return;
+
+    if (reducedMotion) {
+      setStatsVisible(true);
+      return;
+    }
+
+    gsap.set(el, { opacity: 0, y: DISTANCE.sm });
+    const trigger = ScrollTrigger.create({
+      trigger: el,
+      start: 'top 85%',
+      once: true,
+      onEnter: () => {
+        setStatsVisible(true);
+        gsap.to(el, { opacity: 1, y: 0, duration: DURATION.reveal, ease: EASE.out });
+      },
+    });
+    return () => trigger.kill();
+  }, [reducedMotion]);
+
+  useEffect(() => {
     if (!statsVisible) return;
 
     const targets = { employability: 92, salary: 4200, vacancies: 2500 };
@@ -64,7 +93,7 @@ export const Alunos: React.FC = () => {
   }, [statsVisible]);
 
   return (
-    <section id="alunos" ref={sectionRef} className={`relative py-20 sm:py-24 bg-brand-bg/85 overflow-hidden fade-up ${sectionVisible ? 'visible' : ''}`}>
+    <section id="alunos" className="relative py-20 sm:py-24 bg-brand-bg/85 overflow-hidden">
       {/* Luz difusa de fundo */}
       <div className="absolute bottom-10 right-10 w-[500px] h-[500px] rounded-full green-glow opacity-20 pointer-events-none" />
 
@@ -72,25 +101,25 @@ export const Alunos: React.FC = () => {
 
         {/* Título da Seção */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <span className="font-sans font-bold text-[11px] sm:text-xs tracking-widest text-brand-green uppercase">
+          <Reveal as="span" y={DISTANCE.sm} className="block font-sans font-bold text-[11px] sm:text-xs tracking-widest text-brand-green uppercase">
             HISTÓRIAS DE SUCESSO
-          </span>
-          <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white mt-3">
+          </Reveal>
+          <Reveal as="h2" split="words" delay={0.1} className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white mt-3">
             Quem vivenciou o método <span className="bg-gradient-to-r from-brand-green via-brand-green-light to-brand-purple bg-clip-text text-transparent">
               <br /> na prática
             </span>
-          </h2>
-          <p className="font-sans text-slate-400 mt-4 text-base sm:text-lg">
+          </Reveal>
+          <Reveal as="p" y={DISTANCE.sm} delay={0.25} className="font-sans text-slate-400 mt-4 text-base sm:text-lg">
             Veja a transformação de pessoas que começaram do zero absoluto e hoje constroem carreiras consolidadas nas maiores empresas de tecnologia do país.
-          </p>
+          </Reveal>
         </div>
 
         {/* Depoimentos */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8">
+        <Reveal as="div" stagger delay={0.35} className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8">
           {depoimentos.map((depoimento, idx) => (
             <div
               key={idx}
-              className={`relative p-6 sm:p-8 rounded-xl glass-panel flex flex-col justify-between gap-8 hover:scale-[1.01] transition-transform duration-300 delay-${(idx + 1) * 100}`}
+              className="relative p-6 sm:p-8 rounded-xl glass-panel flex flex-col justify-between gap-8 hover:scale-[1.01] transition-transform duration-300"
             >
               <p className="font-sans text-slate-300 italic leading-relaxed relative z-10">
                 {depoimento.quote}
@@ -115,9 +144,9 @@ export const Alunos: React.FC = () => {
               </div>
             </div>
           ))}
-        </div>
+        </Reveal>
 
-        <div ref={statsRef} className={`mt-12 sm:mt-20 p-6 sm:p-8 rounded-xl glass-panel flex flex-col md:flex-row justify-around items-center gap-6 sm:gap-8 text-center md:text-left fade-up ${statsVisible ? 'visible' : ''}`}>
+        <div ref={statsRef} className="mt-12 sm:mt-20 p-6 sm:p-8 rounded-xl glass-panel flex flex-col md:flex-row justify-around items-center gap-6 sm:gap-8 text-center md:text-left">
           <div>
             <span className="font-display font-extrabold text-3xl sm:text-4xl text-white">{stats.employability}%</span>
             <p className="font-sans text-[10px] sm:text-xs text-slate-400 uppercase tracking-widest mt-1">Taxa de Empregabilidade</p>
