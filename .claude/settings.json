@@ -19,7 +19,12 @@
       "Bash(sed -i 's/via-emerald-300 to-cyan-400/via-brand-green-light to-brand-purple/g' components/devclub/Alunos.tsx components/devclub/CTAFinal.tsx components/devclub/Empresas.tsx components/devclub/Equipe.tsx components/devclub/Formacoes.tsx components/devclub/Hero.tsx)",
       "Bash(sed -i 's/hover:text-cyan-400/hover:text-brand-purple-light/g' components/devclub/Equipe.tsx)",
       "Bash(sed -i 's/text-violet-400/text-brand-purple-light/g' components/devclub/Formacoes.tsx components/devclub/Hero.tsx)",
-      "Bash(sed -i 's/text-cyan-400/text-brand-purple-light/g' components/devclub/Formacoes.tsx)"
+      "Bash(sed -i 's/text-cyan-400/text-brand-purple-light/g' components/devclub/Formacoes.tsx)",
+      "Bash(ls -la \"/c/Users/carlo/.claude/projects/c--Users-carlo-OneDrive-Documentos-Devclubconcurso/memory/\")",
+      "Read(//c/Users/carlo/.claude/projects/c--Users-carlo-OneDrive-Documentos-Devclubconcurso/memory//**)",
+      "Bash(git push *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

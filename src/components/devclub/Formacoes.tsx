@@ -2,14 +2,14 @@ import { Code, Server, Database, Globe, Layers, Cpu } from 'lucide-react';
 import { Reveal } from '../ui/Reveal';
 import { Badge } from '../ui/Badge';
 import { DISTANCE } from '../../lib/motion';
-import { FormacaoTrack } from './FormacaoTrack';
-import type { Modulo } from './FormacaoCard';
+import { FormacaoList } from './FormacaoList';
+import type { Modulo } from './FormacaoRow';
 /**
- * Formacoes - Apresenta os módulos/tecnologias ensinados na formação do DevClub
- * como uma trilha horizontal pinada (FormacaoTrack) em vez de um grid estático:
- * a formação é uma progressão linear, então a interface passa a espelhar esse
- * modelo mental em vez de repetir o padrão "eyebrow + grid 3 colunas" das
- * demais seções.
+ * Formacoes - Lista de módulos à esquerda, painel visual sincronizado à
+ * direita (FormacaoList), em vez do grid 3 colunas repetido nas demais
+ * seções: a lista é escaneável rápido, e o resultado de cada escolha
+ * aparece isolado ao lado — cria uma relação de causa/efeito em vez de
+ * repetir a mesma composição de card 6 vezes.
  */
 export const Formacoes: React.FC = () => {
   // Lista fictícia de módulos/etapas da formação baseada no currículo real do DevClub
@@ -19,42 +19,71 @@ export const Formacoes: React.FC = () => {
       title: "Fundamentos Web",
       description: "Domine HTML5, CSS3 estruturado e semântico, layouts flexíveis com Flexbox/Grid e versionamento de código profissional usando Git e GitHub.",
       icon: <Globe className="site-icon text-green-normal" size={24} />,
-      badge: "Módulo 1"
+      badge: "Módulo 1",
+      snippet: [
+        { text: '<section class="hero">' },
+        { text: '  display: flex;', accent: true },
+        { text: '</section>' },
+      ],
     },
     {
       number: "02",
       title: "JavaScript Avançado",
       description: "Aprenda a linguagem mais popular do mundo. Programação assíncrona, manipulação de DOM, requisições a APIs, ES6+ e lógica avançada.",
       icon: <Code className="site-icon text-purple-light" size={24} />,
-      badge: "Módulo 2"
+      badge: "Módulo 2",
+      snippet: [
+        { text: 'async function login() {' },
+        { text: '  await api.auth();', accent: true },
+        { text: '}' },
+      ],
     },
     {
       number: "03",
       title: "Front-end com React",
       description: "Construa interfaces dinâmicas, rápidas e de nível corporativo usando React.js, hooks personalizados, gerenciamento de estados e Tailwind CSS.",
       icon: <Layers className="site-icon text-purple-light" size={24} />,
-      badge: "Módulo 3"
+      badge: "Módulo 3",
+      snippet: [
+        { text: 'function App() {' },
+        { text: '  return <Devs />;', accent: true },
+        { text: '}' },
+      ],
     },
     {
       number: "04",
       title: "Back-end com Node.js",
       description: "Crie servidores seguros e escaláveis. Desenvolvimento de APIs RESTful usando Express, Middlewares, autenticação JWT e arquitetura limpa.",
       icon: <Server className="site-icon text-green-light" size={24} />,
-      badge: "Módulo 4"
+      badge: "Módulo 4",
+      snippet: [
+        { text: "app.post('/vagas', (req, res) => {" },
+        { text: "  res.json({ status: 'ok' });", accent: true },
+        { text: '});' },
+      ],
     },
     {
       number: "05",
       title: "Bancos de Dados",
       description: "Aprenda a modelar, estruturar e manipular bancos de dados relacionais e não-relacionais como PostgreSQL, MySQL e MongoDB usando ORMs modernos.",
       icon: <Database className="site-icon text-amber-400" size={24} />,
-      badge: "Módulo 5"
+      badge: "Módulo 5",
+      snippet: [
+        { text: 'SELECT nome, cargo' },
+        { text: 'FROM alunos', accent: true },
+        { text: 'WHERE contratado = true;' },
+      ],
     },
     {
       number: "06",
       title: "Preparação para o Mercado",
       description: "Simulação de entrevistas técnicas, otimização de perfil no LinkedIn, estruturação de portfólio de peso e desenvolvimento de habilidades comportamentais (Soft Skills).",
       icon: <Cpu className="site-icon text-purple-normal" size={24} />,
-      badge: "Módulo Especial"
+      badge: "Módulo Especial",
+      snippet: [
+        { text: '> simulação de entrevista' },
+        { text: '> portfólio: pronto ✓', accent: true },
+      ],
     }
   ];
 
@@ -75,7 +104,9 @@ export const Formacoes: React.FC = () => {
           </Reveal>
         </div>
 
-        <FormacaoTrack modulos={modulos} />
+        <Reveal as="div" delay={0.3}>
+          <FormacaoList modulos={modulos} />
+        </Reveal>
       </div>
     </section>
   );
