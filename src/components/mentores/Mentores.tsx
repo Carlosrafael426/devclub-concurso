@@ -2,6 +2,8 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { BgNeural, GREEN, PURPLE, rgba } from '../../lib/bgNeural';
 import { MENTORES } from './mentoresData';
 import { Badge } from '../ui/Badge';
+import { Reveal } from '../ui/Reveal';
+import { DISTANCE } from '../../lib/motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import './mentores.css';
 
@@ -161,64 +163,70 @@ export default function Mentores() {
       <canvas ref={linksCanvasRef} className="mtr-links" aria-hidden="true" />
 
       <div className="mtr-head">
-        <Badge>quem vai te conduzir_</Badge>
-        <h2>
+        <Reveal as="div" y={DISTANCE.sm}>
+          <Badge>quem vai te conduzir_</Badge>
+        </Reveal>
+        <Reveal as="h2" split="words" delay={0.1}>
           Mentores que já estão<br />
           <span className="g">dentro do mercado</span>
-        </h2>
-        <p>Não é teoria acadêmica. É quem constrói software de verdade todo dia te mostrando o caminho.</p>
+        </Reveal>
+        <Reveal as="p" y={DISTANCE.sm} delay={0.2}>
+          Não é teoria acadêmica. É quem constrói software de verdade todo dia te mostrando o caminho.
+        </Reveal>
       </div>
 
-      <div className="mtr-crew">
-        {MENTORES.map((m, i) => (
-          <article
-            key={m.id}
-            ref={(el) => {
-              cardRefs.current[i] = el;
-            }}
-            tabIndex={0}
-            className={`mtr-card${activeIndex === i ? ' is-on' : ''}`}
-            aria-label={`${m.nome}, ${m.cargo}. ${m.experiencia} de experiência em ${m.foco}. ${m.alunos} alunos impactados.`}
-            onMouseEnter={() => activate(i)}
-            onMouseLeave={() => deactivate(i)}
-            onFocus={() => activate(i)}
-            onBlur={() => deactivate(i)}
-          >
-            <div className="mtr-card__in">
-              <div className="mtr-card__ph">
-                <img src={m.foto} alt={m.nome} loading="lazy" decoding="async" />
-                <div className="mtr-card__duo" aria-hidden="true" />
-                <div className="mtr-card__scan" aria-hidden="true" />
-                <div key={`beam-${activationTick}`} className="mtr-card__beam" aria-hidden="true" />
-                <div className="mtr-card__fade" aria-hidden="true" />
-                <span className="mtr-card__br mtr-card__br--a" aria-hidden="true" />
-                <span className="mtr-card__br mtr-card__br--b" aria-hidden="true" />
-                <span className="mtr-card__br mtr-card__br--c" aria-hidden="true" />
-                <span className="mtr-card__br mtr-card__br--d" aria-hidden="true" />
-                <span className="mtr-card__id">{m.id}</span>
-              </div>
-              <div className="mtr-card__info">
-                <div className="mtr-card__nm">{m.nome}</div>
-                <div className="mtr-card__rl">{m.cargo}</div>
-                <div className="mtr-card__stats">
-                  <div className="mtr-card__row">
-                    <span className="mtr-card__k">EXPERIÊNCIA</span>
-                    <span className="mtr-card__v mtr-card__v--g">{m.experiencia}</span>
-                  </div>
-                  <div className="mtr-card__row">
-                    <span className="mtr-card__k">FOCO</span>
-                    <span className="mtr-card__v">{m.foco}</span>
-                  </div>
-                  <div className="mtr-card__row">
-                    <span className="mtr-card__k">ALUNOS</span>
-                    <span className="mtr-card__v mtr-card__v--g">{m.alunos}</span>
+      <Reveal as="div" y={DISTANCE.lg} delay={0.3}>
+        <div className="mtr-crew">
+          {MENTORES.map((m, i) => (
+            <article
+              key={m.id}
+              ref={(el) => {
+                cardRefs.current[i] = el;
+              }}
+              tabIndex={0}
+              className={`mtr-card${activeIndex === i ? ' is-on' : ''}`}
+              aria-label={`${m.nome}, ${m.cargo}. ${m.experiencia} de experiência em ${m.foco}. ${m.alunos} alunos impactados.`}
+              onMouseEnter={() => activate(i)}
+              onMouseLeave={() => deactivate(i)}
+              onFocus={() => activate(i)}
+              onBlur={() => deactivate(i)}
+            >
+              <div className="mtr-card__in">
+                <div className="mtr-card__ph">
+                  <img src={m.foto} alt={m.nome} loading="lazy" decoding="async" />
+                  <div className="mtr-card__duo" aria-hidden="true" />
+                  <div className="mtr-card__scan" aria-hidden="true" />
+                  <div key={`beam-${activationTick}`} className="mtr-card__beam" aria-hidden="true" />
+                  <div className="mtr-card__fade" aria-hidden="true" />
+                  <span className="mtr-card__br mtr-card__br--a" aria-hidden="true" />
+                  <span className="mtr-card__br mtr-card__br--b" aria-hidden="true" />
+                  <span className="mtr-card__br mtr-card__br--c" aria-hidden="true" />
+                  <span className="mtr-card__br mtr-card__br--d" aria-hidden="true" />
+                  <span className="mtr-card__id">{m.id}</span>
+                </div>
+                <div className="mtr-card__info">
+                  <div className="mtr-card__nm">{m.nome}</div>
+                  <div className="mtr-card__rl">{m.cargo}</div>
+                  <div className="mtr-card__stats">
+                    <div className="mtr-card__row">
+                      <span className="mtr-card__k">EXPERIÊNCIA</span>
+                      <span className="mtr-card__v mtr-card__v--g">{m.experiencia}</span>
+                    </div>
+                    <div className="mtr-card__row">
+                      <span className="mtr-card__k">FOCO</span>
+                      <span className="mtr-card__v">{m.foco}</span>
+                    </div>
+                    <div className="mtr-card__row">
+                      <span className="mtr-card__k">ALUNOS</span>
+                      <span className="mtr-card__v mtr-card__v--g">{m.alunos}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </article>
-        ))}
-      </div>
+            </article>
+          ))}
+        </div>
+      </Reveal>
     </section>
   );
 }

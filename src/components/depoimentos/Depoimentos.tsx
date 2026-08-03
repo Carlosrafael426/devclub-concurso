@@ -2,6 +2,8 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import type { KeyboardEvent } from 'react';
 import { BgNeural, GREEN, rgba } from '../../lib/bgNeural';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { Reveal } from '../ui/Reveal';
+import { DISTANCE } from '../../lib/motion';
 import './depoimentos.css';
 
 type Depoimento = {
@@ -172,81 +174,85 @@ export default function Depoimentos() {
       <svg ref={decoRef} className="dep-deco" aria-hidden="true" />
 
       <div className="dep-head">
-        <div className="dep-kicker">
+        <Reveal as="div" y={DISTANCE.sm} className="dep-kicker">
           <span aria-hidden="true">//</span> DEPOIMENTOS
-        </div>
-        <h2>
+        </Reveal>
+        <Reveal as="h2" split="words" delay={0.1}>
           O que dizem<br />
           <span className="g">nossos alunos</span>
           <span className="dep-cur" aria-hidden="true" />
-        </h2>
-        <p>Histórias reais de quem mudou de carreira e hoje trabalha com programação.</p>
+        </Reveal>
+        <Reveal as="p" y={DISTANCE.sm} delay={0.2}>
+          Histórias reais de quem mudou de carreira e hoje trabalha com programação.
+        </Reveal>
       </div>
 
-      <div
-        className="dep-carousel"
-        onMouseEnter={pause}
-        onMouseLeave={resume}
-        onFocus={pause}
-        onBlur={resume}
-        onKeyDown={handleKeyDown}
-      >
-        <button type="button" className="dep-nav" aria-label="Depoimento anterior" onClick={() => { goTo(activeIndex - 1); restart(); }}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 5l-7 7 7 7" />
-          </svg>
-        </button>
+      <Reveal as="div" y={DISTANCE.lg} delay={0.3}>
+        <div
+          className="dep-carousel"
+          onMouseEnter={pause}
+          onMouseLeave={resume}
+          onFocus={pause}
+          onBlur={resume}
+          onKeyDown={handleKeyDown}
+        >
+          <button type="button" className="dep-nav" aria-label="Depoimento anterior" onClick={() => { goTo(activeIndex - 1); restart(); }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 5l-7 7 7 7" />
+            </svg>
+          </button>
 
-        <div ref={viewportRef} className="dep-viewport">
-          <div ref={trackRef} className="dep-track">
-            {DEPOIMENTOS.map((d, i) => (
-              <article
-                key={d.nome}
-                ref={(el) => { cardRefs.current[i] = el; }}
-                className={`dep-card${i === activeIndex ? ' is-active' : ''}`}
-              >
-                <div className="dep-flag" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.8.8-5 4.7 1.3 6.8L12 17.3 5.9 20.6 7.2 13.8l-5-4.7 6.8-.8L12 2z" /></svg>
-                  DESTAQUE
-                </div>
-                <div className="dep-card__in">
-                  <div className="dep-card__q" aria-hidden="true">&ldquo;</div>
-                  <p className="dep-card__tx">{d.texto}</p>
-                  <div className="dep-card__who">
-                    <div className="dep-card__av">
-                      <img src={d.avatar} alt="" loading="lazy" decoding="async" />
-                    </div>
-                    <div>
-                      <div className="dep-card__nm">{d.nome}</div>
-                      <div className="dep-card__rl">{d.cargo}</div>
+          <div ref={viewportRef} className="dep-viewport">
+            <div ref={trackRef} className="dep-track">
+              {DEPOIMENTOS.map((d, i) => (
+                <article
+                  key={d.nome}
+                  ref={(el) => { cardRefs.current[i] = el; }}
+                  className={`dep-card${i === activeIndex ? ' is-active' : ''}`}
+                >
+                  <div className="dep-flag" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.8.8-5 4.7 1.3 6.8L12 17.3 5.9 20.6 7.2 13.8l-5-4.7 6.8-.8L12 2z" /></svg>
+                    DESTAQUE
+                  </div>
+                  <div className="dep-card__in">
+                    <div className="dep-card__q" aria-hidden="true">&ldquo;</div>
+                    <p className="dep-card__tx">{d.texto}</p>
+                    <div className="dep-card__who">
+                      <div className="dep-card__av">
+                        <img src={d.avatar} alt="" loading="lazy" decoding="async" />
+                      </div>
+                      <div>
+                        <div className="dep-card__nm">{d.nome}</div>
+                        <div className="dep-card__rl">{d.cargo}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              ))}
+            </div>
           </div>
+
+          <button type="button" className="dep-nav" aria-label="Próximo depoimento" onClick={() => { goTo(activeIndex + 1); restart(); }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
 
-        <button type="button" className="dep-nav" aria-label="Próximo depoimento" onClick={() => { goTo(activeIndex + 1); restart(); }}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-
-      <div className="dep-dots" role="tablist" aria-label="Selecionar depoimento">
-        {DEPOIMENTOS.map((d, i) => (
-          <button
-            key={d.nome}
-            type="button"
-            role="tab"
-            aria-selected={i === activeIndex}
-            aria-label={`Depoimento ${i + 1}: ${d.nome}`}
-            className={i === activeIndex ? 'is-on' : ''}
-            onClick={() => { goTo(i); restart(); }}
-          />
-        ))}
-      </div>
+        <div className="dep-dots" role="tablist" aria-label="Selecionar depoimento">
+          {DEPOIMENTOS.map((d, i) => (
+            <button
+              key={d.nome}
+              type="button"
+              role="tab"
+              aria-selected={i === activeIndex}
+              aria-label={`Depoimento ${i + 1}: ${d.nome}`}
+              className={i === activeIndex ? 'is-on' : ''}
+              onClick={() => { goTo(i); restart(); }}
+            />
+          ))}
+        </div>
+      </Reveal>
     </section>
   );
 }

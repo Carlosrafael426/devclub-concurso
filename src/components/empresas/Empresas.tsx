@@ -3,6 +3,8 @@ import { BgNeural } from '../../lib/bgNeural';
 import { Globe, drawBranch } from './empresasCore';
 import { EMPRESAS } from './empresasData';
 import { Badge } from '../ui/Badge';
+import { Reveal } from '../ui/Reveal';
+import { DISTANCE } from '../../lib/motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import './empresas.css';
 
@@ -202,13 +204,17 @@ export default function Empresas() {
       <canvas ref={netCanvasRef} className="emp-net" aria-hidden="true" />
 
       <div className="emp-head">
-        <Badge>empresas parceiras_</Badge>
-        <h2>
+        <Reveal as="div" y={DISTANCE.sm}>
+          <Badge>empresas parceiras_</Badge>
+        </Reveal>
+        <Reveal as="h2" split="words" delay={0.1}>
           Empresas que contratam<br />
           <span className="g">nossos devs</span>
-        </h2>
-        <p>Nossos alunos já foram contratados por essas e outras grandes empresas de tecnologia.</p>
-        <div className="emp-stat">
+        </Reveal>
+        <Reveal as="p" y={DISTANCE.sm} delay={0.2}>
+          Nossos alunos já foram contratados por essas e outras grandes empresas de tecnologia.
+        </Reveal>
+        <Reveal as="div" y={DISTANCE.sm} delay={0.3} className="emp-stat">
           <div>
             <b>{statTotal}+</b>
             <span>CONTRATAÇÕES</span>
@@ -217,56 +223,58 @@ export default function Empresas() {
             <b>{statCompanies}</b>
             <span>EMPRESAS</span>
           </div>
-        </div>
+        </Reveal>
       </div>
 
-      <div ref={orbitRef} className="emp-orbit">
-        <canvas ref={globeCanvasRef} className="emp-globe" aria-hidden="true" />
-        <div className="emp-co-wrap">
-          {EMPRESAS.map((co, i) => {
-            const { size, icoSize } = LAYOUT[i];
-            return (
-              <button
-                key={co.nome}
-                type="button"
-                className="emp-co"
-                aria-label={`${co.nome}: ${co.contratacoes} devs contratados`}
-                ref={(el) => {
-                  nodeRefs.current[i] = el;
-                }}
-                onMouseEnter={() => handleEnter(i)}
-                onMouseLeave={() => handleLeave(i)}
-                onFocus={() => handleEnter(i)}
-                onBlur={() => handleLeave(i)}
-              >
-                <div className="emp-co__tip" aria-hidden="true">
-                  <b>{co.contratacoes}</b>
-                  <span>DEVS CONTRATADOS</span>
-                </div>
-                <div
-                  className="emp-co__b"
-                  style={{
-                    width: size,
-                    height: size,
-                    borderColor: `${co.cor}80`,
-                    background: `radial-gradient(circle at 34% 28%, ${co.cor}2e, ${co.cor}0a 58%, rgba(11,10,12,.92))`,
-                    boxShadow: `0 0 24px ${co.cor}2e, inset 0 0 20px ${co.cor}1c`,
+      <Reveal as="div" y={DISTANCE.lg} delay={0.35}>
+        <div ref={orbitRef} className="emp-orbit">
+          <canvas ref={globeCanvasRef} className="emp-globe" aria-hidden="true" />
+          <div className="emp-co-wrap">
+            {EMPRESAS.map((co, i) => {
+              const { size, icoSize } = LAYOUT[i];
+              return (
+                <button
+                  key={co.nome}
+                  type="button"
+                  className="emp-co"
+                  aria-label={`${co.nome}: ${co.contratacoes} devs contratados`}
+                  ref={(el) => {
+                    nodeRefs.current[i] = el;
                   }}
+                  onMouseEnter={() => handleEnter(i)}
+                  onMouseLeave={() => handleLeave(i)}
+                  onFocus={() => handleEnter(i)}
+                  onBlur={() => handleLeave(i)}
                 >
-                  <span className="emp-co__ico" style={{ width: icoSize, height: icoSize, color: co.cor }}>
-                    <svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true">
-                      <path d={co.path} />
-                    </svg>
-                  </span>
-                  <span className="emp-co__n" style={{ fontSize: size > 70 ? 9.8 : 9 }}>
-                    {co.nome}
-                  </span>
-                </div>
-              </button>
-            );
-          })}
+                  <div className="emp-co__tip" aria-hidden="true">
+                    <b>{co.contratacoes}</b>
+                    <span>DEVS CONTRATADOS</span>
+                  </div>
+                  <div
+                    className="emp-co__b"
+                    style={{
+                      width: size,
+                      height: size,
+                      borderColor: `${co.cor}80`,
+                      background: `radial-gradient(circle at 34% 28%, ${co.cor}2e, ${co.cor}0a 58%, rgba(11,10,12,.92))`,
+                      boxShadow: `0 0 24px ${co.cor}2e, inset 0 0 20px ${co.cor}1c`,
+                    }}
+                  >
+                    <span className="emp-co__ico" style={{ width: icoSize, height: icoSize, color: co.cor }}>
+                      <svg viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" aria-hidden="true">
+                        <path d={co.path} />
+                      </svg>
+                    </span>
+                    <span className="emp-co__n" style={{ fontSize: size > 70 ? 9.8 : 9 }}>
+                      {co.nome}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }

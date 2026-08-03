@@ -17,6 +17,8 @@ import { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react
 import { CoreScene, BgNeural, GREEN, PURPLE, rgba } from "./stacksCore";
 import { LOGOS, STACKS, IDLE } from "./stacksData";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { Reveal } from "../ui/Reveal";
+import { DISTANCE } from "../../lib/motion";
 import "./stacks.css";
 
 export default function Stacks() {
@@ -224,32 +226,36 @@ export default function Stacks() {
       </div>
 
       <header className="stx-head">
-        <h2>O que você vai <span className="g">dominar</span> no DevClub</h2>
-        <p>Da base ao deploy: tecnologias mais exigidas pelo mercado, na <span className="g">ordem certa</span> de aprendizado.</p>
+        <Reveal as="h2" split="words">O que você vai <span className="g">dominar</span> no DevClub</Reveal>
+        <Reveal as="p" y={DISTANCE.sm} delay={0.1}>
+          Da base ao deploy: tecnologias mais exigidas pelo mercado, na <span className="g">ordem certa</span> de aprendizado.
+        </Reveal>
       </header>
 
-      <div ref={stageRef} className="stx-stage">
-        <svg ref={tracesRef} className="stx-traces" aria-hidden="true" />
+      <Reveal as="div" y={DISTANCE.lg} delay={0.2}>
+        <div ref={stageRef} className="stx-stage">
+          <svg ref={tracesRef} className="stx-traces" aria-hidden="true" />
 
-        <div className="stx-col">{STACKS.slice(0, 4).map((s, i) => renderCard(s, i))}</div>
+          <div className="stx-col">{STACKS.slice(0, 4).map((s, i) => renderCard(s, i))}</div>
 
-        <div ref={coreRef} className="stx-core">
-          <canvas ref={coreCanvasRef} className="stx-core__cv" aria-hidden="true" />
-          <div className="stx-term" aria-live="polite">
-            <div className="stx-term__in">
-              <div className="stx-term__cmd">&gt; {cmd}</div>
-              <div className="stx-term__desc">
-                {desc.split("\n").map((line, k) => (
-                  <span key={k}>{line}<br /></span>
-                ))}
+          <div ref={coreRef} className="stx-core">
+            <canvas ref={coreCanvasRef} className="stx-core__cv" aria-hidden="true" />
+            <div className="stx-term" aria-live="polite">
+              <div className="stx-term__in">
+                <div className="stx-term__cmd">&gt; {cmd}</div>
+                <div className="stx-term__desc">
+                  {desc.split("\n").map((line, k) => (
+                    <span key={k}>{line}<br /></span>
+                  ))}
+                </div>
+                <div className="stx-term__pr">&gt; <span className="stx-cur" /></div>
               </div>
-              <div className="stx-term__pr">&gt; <span className="stx-cur" /></div>
             </div>
           </div>
-        </div>
 
-        <div className="stx-col">{STACKS.slice(4).map((s, i) => renderCard(s, i + 4))}</div>
-      </div>
+          <div className="stx-col">{STACKS.slice(4).map((s, i) => renderCard(s, i + 4))}</div>
+        </div>
+      </Reveal>
     </section>
   );
 }
