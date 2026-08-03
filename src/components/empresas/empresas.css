@@ -82,18 +82,21 @@
 .emp-co:focus-visible { outline: none; }
 .emp-co:focus-visible .emp-co__b { box-shadow: 0 0 0 3px rgba(57,211,83,.6); }
 
+/* --tip-accent vem inline por empresa (co.cor) — o balão acompanha a
+   mesma cor do círculo/logo daquele nó, não um verde fixo. */
 .emp-co__tip {
   position: absolute; left: 50%; bottom: calc(100% + 12px); transform: translateX(-50%) translateY(6px);
-  padding: 9px 14px; border-radius: 8px; background: rgba(11,10,12,.97); border: 1.4px solid var(--green-normal);
+  padding: 9px 14px; border-radius: 8px; background: rgba(11,10,12,.97);
+  border: 1.4px solid var(--tip-accent, var(--green-normal));
   white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s;
   box-shadow: 0 8px 26px rgba(0,0,0,.7); z-index: 9;
 }
 .emp-co:hover .emp-co__tip, .emp-co:focus-visible .emp-co__tip { opacity: 1; transform: translateX(-50%) translateY(0); }
-.emp-co__tip b { display: block; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 17px; font-weight: 600; color: var(--green-light); }
+.emp-co__tip b { display: block; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 17px; font-weight: 600; color: var(--tip-accent, var(--green-light)); }
 .emp-co__tip span { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 10px; letter-spacing: 1.1px; color: var(--gray-600); }
 .emp-co__tip::after {
   content: ""; position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
-  border: 6px solid transparent; border-top-color: var(--green-normal);
+  border: 6px solid transparent; border-top-color: var(--tip-accent, var(--green-normal));
 }
 
 /* ---------- responsivo ---------- */

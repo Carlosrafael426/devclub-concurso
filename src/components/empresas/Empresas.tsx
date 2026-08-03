@@ -246,7 +246,11 @@ export default function Empresas() {
                   onFocus={() => handleEnter(i)}
                   onBlur={() => handleLeave(i)}
                 >
-                  <div className="emp-co__tip" aria-hidden="true">
+                  <div
+                    className="emp-co__tip"
+                    aria-hidden="true"
+                    style={{ '--tip-accent': co.cor } as React.CSSProperties}
+                  >
                     <b>{co.contratacoes}</b>
                     <span>DEVS CONTRATADOS</span>
                   </div>
