@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react';
+import { ArrowRight, Users } from 'lucide-react';
 import { BgNeural, GREEN, PURPLE, rgba } from '../../lib/bgNeural';
 import { MENTORES } from './mentoresData';
 import { Badge } from '../ui/Badge';
@@ -7,20 +8,14 @@ import { DISTANCE } from '../../lib/motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import './mentores.css';
 
-// Cadeia (liga vizinhos em sequência) + "saltos" extras — forma um time em
-// rede, não uma fila. Fixo para os 5 cartões desta formação (o próprio
-// layout escalonado em CSS também é desenhado para exatamente 5).
-const PAIRS: [number, number][] = [
-  [0, 1], [1, 2], [2, 3], [3, 4],
-  [0, 2], [2, 4], [1, 3],
-];
-
 /**
- * Mentores — "formação de time" com 5 cartões em posições escalonadas
- * (CSS puro, ver mentores.css) ligados por uma rede de curvas (canvas) que
- * acende e ganha um pulso viajando quando um dos dois lados está em
- * hover/foco. Fundo em rede neural 3D (mesma engine do hero/stacks/
- * depoimentos/empresas).
+ * Mentores — hub central (ícone de rede) ligado por "galhos" a 5 nós em
+ * posições fixas ao redor (2 em cima, 2 no meio, 1 embaixo — ver
+ * data-slot em mentores.css). Cada mentor tem uma cor de identidade
+ * (verde ou roxo, campo `accent` em mentoresData.ts) que colore seu nó
+ * e sua linha o tempo todo; o hover/foco só acende a opacidade e faz um
+ * pulso viajar pela curva até o hub — a mesma regra "cor = identidade,
+ * opacidade/pulso = interação" já usada em empresasCore.drawBranch.
  *
  * O reinício do "beam" (varredura que desce pela foto ao ativar um
  * cartão) usa uma key que muda a cada ativação — força o React a
@@ -31,6 +26,7 @@ export default function Mentores() {
   const secRef = useRef<HTMLElement | null>(null);
   const bgCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const linksCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const hubRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
   const hotSinceRef = useRef(0);
 
@@ -58,14 +54,15 @@ export default function Mentores() {
     return () => bg.destroy();
   }, [reduced]);
 
-  // Rede de conexões: liga os cartões (posições medidas via
-  // getBoundingClientRect, o layout escalonado é CSS puro) formando um
-  // time — acende e ganha um pulso viajando pela curva quando um dos dois
-  // lados está em foco/hover.
+  // Galhos hub→nó: posição do hub e dos cartões medida via
+  // getBoundingClientRect (o layout em si é CSS puro, ver .mtr-web e
+  // .mtr-card[data-slot] em mentores.css) — acende e ganha um pulso
+  // viajando pela curva quando aquele nó está em hover/foco.
   useLayoutEffect(() => {
     const sec = secRef.current;
+    const hub = hubRef.current;
     const canvas = linksCanvasRef.current;
-    if (!sec || !canvas) return;
+    if (!sec || !hub || !canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -90,9 +87,9 @@ export default function Mentores() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, width, height);
 
-      // Abaixo de 760px os cartões viram grade simples — sem espaço
-      // lateral pra rede de curvas fazer sentido (mesmo breakpoint do
-      // CSS que esconde o canvas).
+      // Abaixo de 760px os nós viram lista empilhada — sem espaço pra
+      // rede de galhos fazer sentido (mesmo breakpoint do CSS que
+      // esconde o canvas e as caixas HUD).
       if (window.innerWidth <= 760) {
         raf = requestAnimationFrame(draw);
         return;
@@ -101,47 +98,52 @@ export default function Mentores() {
       ctx.globalCompositeOperation = 'lighter';
 
       const secR = sec.getBoundingClientRect();
+      const hubR = hub.getBoundingClientRect();
+      const hubPoint = {
+        x: hubR.left - secR.left + hubR.width / 2,
+        y: hubR.top - secR.top + hubR.height / 2,
+      };
       const points = cardRefs.current.map((card) => {
         if (!card) return { x: 0, y: 0 };
         const b = card.getBoundingClientRect();
-        return { x: b.left - secR.left + b.width / 2, y: b.top - secR.top + b.height * 0.42 };
+        return { x: b.left - secR.left + b.width / 2, y: b.top - secR.top + b.height / 2 };
       });
 
-      PAIRS.forEach(([i, j]) => {
-        const a = points[i], b = points[j];
-        const hot = activeIndex === i || activeIndex === j;
-        const mx = (a.x + b.x) / 2;
-        const my = (a.y + b.y) / 2 - Math.abs(b.x - a.x) * 0.13 - 26;
+      MENTORES.forEach((m, i) => {
+        const p = points[i];
+        const hot = activeIndex === i;
+        const col = m.accent === 'green' ? GREEN : PURPLE;
+        const mx = (hubPoint.x + p.x) / 2;
+        const my = (hubPoint.y + p.y) / 2 - Math.abs(p.x - hubPoint.x) * 0.13;
+
         ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.quadraticCurveTo(mx, my, b.x, b.y);
-        ctx.strokeStyle = hot ? rgba(PURPLE, 0.7) : rgba(GREEN, 0.11);
+        ctx.moveTo(hubPoint.x, hubPoint.y);
+        ctx.quadraticCurveTo(mx, my, p.x, p.y);
+        ctx.strokeStyle = hot ? rgba(col, 0.85) : rgba(col, 0.16);
         ctx.lineWidth = hot ? 1.8 : 1;
         ctx.stroke();
 
-        // Pulso viajando pela curva: só enquanto está aceso, e desligado
-        // em reduced-motion (é a única parte contínua/decorativa aqui —
-        // o aceso em si é resposta direta à interação, não um loop).
+        // Pulso viajando do hub até o nó: só enquanto está aceso, e
+        // desligado em reduced-motion (é a única parte contínua/
+        // decorativa aqui — o aceso em si é resposta direta à
+        // interação, não um loop).
         if (hot && !reduced) {
           const f = ((performance.now() - hotSinceRef.current) / 900) % 1;
           const u = 1 - f;
-          const px = u * u * a.x + 2 * u * f * mx + f * f * b.x;
-          const py = u * u * a.y + 2 * u * f * my + f * f * b.y;
+          const px = u * u * hubPoint.x + 2 * u * f * mx + f * f * p.x;
+          const py = u * u * hubPoint.y + 2 * u * f * my + f * f * p.y;
           const g = ctx.createRadialGradient(px, py, 0, px, py, 9);
-          g.addColorStop(0, rgba(PURPLE, 1));
-          g.addColorStop(1, rgba(PURPLE, 0));
+          g.addColorStop(0, rgba(col, 1));
+          g.addColorStop(1, rgba(col, 0));
           ctx.beginPath();
           ctx.arc(px, py, 9, 0, 6.28);
           ctx.fillStyle = g;
           ctx.fill();
         }
-      });
 
-      points.forEach((p, i) => {
-        const on = activeIndex === i;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, on ? 4 : 2.4, 0, 6.28);
-        ctx.fillStyle = on ? rgba(PURPLE, 0.95) : rgba(GREEN, 0.32);
+        ctx.arc(p.x, p.y, hot ? 4 : 2.4, 0, 6.28);
+        ctx.fillStyle = rgba(col, hot ? 0.95 : 0.4);
         ctx.fill();
       });
 
@@ -162,6 +164,46 @@ export default function Mentores() {
       <div className="mtr-veil" aria-hidden="true" />
       <canvas ref={linksCanvasRef} className="mtr-links" aria-hidden="true" />
 
+      <div className="mtr-corner tl" aria-hidden="true" />
+      <div className="mtr-corner tr" aria-hidden="true" />
+      <div className="mtr-corner bl" aria-hidden="true" />
+      <div className="mtr-corner br" aria-hidden="true" />
+
+      <div className="mtr-hud mtr-hud--tl" aria-hidden="true">
+        <div className="mtr-hud__in">
+          <div className="mtr-hud__t">// rede de conhecimento</div>
+          <div className="mtr-hud__d">conexões que constroem<br />o seu futuro</div>
+          <div className="mtr-hud__dots"><i /><i /><i /><i /><i /></div>
+        </div>
+      </div>
+
+      <div className="mtr-hud mtr-hud--tr" aria-hidden="true">
+        <div className="mtr-hud__in">
+          <div className="mtr-hud__t">// devclub.exe</div>
+        </div>
+      </div>
+
+      <div className="mtr-hud mtr-hud--bl" aria-hidden="true">
+        <div className="mtr-hud__in">
+          <div className="mtr-hud__t">// status da rede</div>
+          <div className="mtr-hud__stat-row"><span>conexões ativas</span><b>[ 128 ]</b></div>
+          <div className="mtr-hud__stat-row"><span>mentores online</span><b>[ {String(MENTORES.length).padStart(2, '0')} ]</b></div>
+          <div className="mtr-hud__stat-row"><span>conhecimento fluindo</span><b>[ &#8734; ]</b></div>
+        </div>
+      </div>
+
+      <a className="mtr-hud mtr-hud--br" href="#inscricao">
+        <div className="mtr-hud__in mtr-hud__in--cta">
+          <span className="mtr-hud__cta-txt">
+            <span className="mtr-hud__cta-t">fazer parte da rede</span>
+            <span className="mtr-hud__cta-s">ver jornada completa</span>
+          </span>
+          <span className="mtr-hud__cta-arrow">
+            <ArrowRight size={15} aria-hidden="true" />
+          </span>
+        </div>
+      </a>
+
       <div className="mtr-head">
         <Reveal as="div" y={DISTANCE.sm}>
           <Badge>quem vai te conduzir_</Badge>
@@ -176,16 +218,24 @@ export default function Mentores() {
       </div>
 
       <Reveal as="div" y={DISTANCE.lg} delay={0.3}>
-        <div className="mtr-crew">
+        <div className="mtr-web">
+          <div ref={hubRef} className="mtr-hub" aria-hidden="true">
+            <span className="mtr-hub__ring mtr-hub__ring--a" />
+            <span className="mtr-hub__ring mtr-hub__ring--b" />
+            <Users className="mtr-hub__ico" aria-hidden="true" />
+          </div>
+
           {MENTORES.map((m, i) => (
             <article
               key={m.id}
+              data-slot={i}
               ref={(el) => {
                 cardRefs.current[i] = el;
               }}
               tabIndex={0}
               className={`mtr-card${activeIndex === i ? ' is-on' : ''}`}
               aria-label={`${m.nome}, ${m.cargo}. ${m.experiencia} de experiência em ${m.foco}. ${m.alunos} alunos impactados.`}
+              style={{ '--mtr-accent': m.accent === 'green' ? 'var(--green-normal)' : 'var(--purple-normal)' } as React.CSSProperties}
               onMouseEnter={() => activate(i)}
               onMouseLeave={() => deactivate(i)}
               onFocus={() => activate(i)}
@@ -207,19 +257,9 @@ export default function Mentores() {
                 <div className="mtr-card__info">
                   <div className="mtr-card__nm">{m.nome}</div>
                   <div className="mtr-card__rl">{m.cargo}</div>
-                  <div className="mtr-card__stats">
-                    <div className="mtr-card__row">
-                      <span className="mtr-card__k">EXPERIÊNCIA</span>
-                      <span className="mtr-card__v mtr-card__v--g">{m.experiencia}</span>
-                    </div>
-                    <div className="mtr-card__row">
-                      <span className="mtr-card__k">FOCO</span>
-                      <span className="mtr-card__v">{m.foco}</span>
-                    </div>
-                    <div className="mtr-card__row">
-                      <span className="mtr-card__k">ALUNOS</span>
-                      <span className="mtr-card__v mtr-card__v--g">{m.alunos}</span>
-                    </div>
+                  <div className="mtr-card__tag-row">
+                    <span className="mtr-card__dot" aria-hidden="true" />
+                    <span className="mtr-card__tag">{m.tag}</span>
                   </div>
                 </div>
               </div>
@@ -227,6 +267,12 @@ export default function Mentores() {
           ))}
         </div>
       </Reveal>
+
+      <div className="mtr-dots" aria-hidden="true">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <span key={i} className={i === 4 ? 'is-on' : ''} />
+        ))}
+      </div>
     </section>
   );
 }
