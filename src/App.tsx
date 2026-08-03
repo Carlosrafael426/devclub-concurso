@@ -4,7 +4,7 @@ import Hero from './components/hero/Hero';
 import Stacks from './components/stacks/Stacks';
 import Depoimentos from './components/depoimentos/Depoimentos';
 import { Equipe } from './components/devclub/Equipe';
-import { Empresas } from './components/devclub/Empresas';
+import Empresas from './components/empresas/Empresas';
 import { CTAFinal } from './components/devclub/CTAFinal';
 import { NetworkBackground } from './components/devclub/NetworkBackground';
 import { ScrollProgress } from './components/ui/ScrollProgress';
