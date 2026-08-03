@@ -7,7 +7,7 @@ import { Logo } from '../ui/Logo';
 
 const NAV_SECTIONS = [
   { id: 'stacks', label: 'Stacks' },
-  { id: 'alunos', label: 'Alunos' },
+  { id: 'depoimentos', label: 'Depoimentos' },
   { id: 'equipe', label: 'Equipe' },
 ];
 
@@ -137,11 +137,11 @@ export const Navbar: React.FC = () => {
             Stacks
           </a>
           <a
-            href="#alunos"
+            href="#depoimentos"
             onClick={() => setIsOpen(false)}
             className="font-sans font-medium text-lg text-gray-300 hover:text-green-normal transition-colors"
           >
-            Alunos
+            Depoimentos
           </a>
           <a
             href="#equipe"

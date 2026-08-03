@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Navbar } from './components/devclub/Navbar';
 import Hero from './components/hero/Hero';
 import Stacks from './components/stacks/Stacks';
-import { Alunos } from './components/devclub/Alunos';
+import Depoimentos from './components/depoimentos/Depoimentos';
 import { Equipe } from './components/devclub/Equipe';
 import { Empresas } from './components/devclub/Empresas';
 import { CTAFinal } from './components/devclub/CTAFinal';
@@ -50,7 +50,7 @@ function App() {
         <main>
           <Hero />
           <Stacks />
-          <Alunos />
+          <Depoimentos />
           <Empresas />
           <Equipe />
         </main>

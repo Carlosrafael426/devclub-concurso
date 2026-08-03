@@ -1,0 +1,172 @@
+/**
+ * Estilos da seção Depoimentos. Prefixo dep- para não colidir com o resto
+ * do site. Cores vêm dos tokens da marca; os rgba() são derivados deles.
+ */
+
+.dep {
+  --dep-cut: polygon(0 22px, 22px 0, calc(100% - 13px) 0, 100% 13px,
+                     100% calc(100% - 22px), calc(100% - 22px) 100%,
+                     13px 100%, 0 calc(100% - 13px));
+  position: relative;
+  min-height: 100vh;
+  padding: 70px 40px 80px;
+  overflow: hidden;
+  /* Opaco: bloqueia o NetworkBackground global de aparecer por baixo da
+     própria rede 3D desta seção (mesmo motivo do hero/stacks). */
+  background-color: var(--black-dark);
+}
+
+/* ---------- fundo ---------- */
+
+.dep-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+
+/* Véu radial: escurece o centro para o carrossel ficar legível sem apagar
+   a rede nas bordas. A camada linear no topo funde com o fade de saída
+   da seção anterior (Stacks) — as duas redes desaparecem no mesmo preto
+   sólido perto da emenda, em vez de trocar de densidade de repente. */
+.dep-veil {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(17,16,18,1) 0%, rgba(17,16,18,0) 12%),
+    radial-gradient(ellipse 66% 62% at 50% 52%,
+      rgba(17,16,18,.90) 0%, rgba(17,16,18,.70) 46%, rgba(17,16,18,.40) 80%, rgba(17,16,18,.6) 100%);
+}
+
+.dep-deco { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: visible; }
+
+/* ---------- cabeçalho ---------- */
+
+.dep-head { position: relative; z-index: 4; text-align: center; max-width: 820px; margin: 0 auto; }
+.dep-kicker {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 13px; letter-spacing: 2.4px; color: var(--purple-light);
+}
+.dep-kicker span { color: var(--gray-600); }
+.dep-head h2 {
+  font-family: "Aldrich", sans-serif; font-weight: 400;
+  font-size: clamp(1.9rem, 4.2vw, 3.1rem); line-height: 1.22;
+  margin-top: 12px; letter-spacing: .5px; color: var(--white-light);
+}
+.dep-head h2 .g { color: var(--green-light); }
+.dep-cur {
+  display: inline-block; width: 13px; height: .72em; background: var(--green-light);
+  vertical-align: -2px; margin-left: 4px; animation: dep-blink 1.05s step-end infinite;
+}
+@keyframes dep-blink { 50% { opacity: 0; } }
+.dep-head p { margin-top: 14px; font-size: 15px; color: var(--gray-300); line-height: 1.65; }
+
+/* ---------- carrossel ---------- */
+
+.dep-carousel {
+  position: relative; z-index: 4; margin-top: 44px;
+  display: flex; align-items: center; justify-content: center; gap: 18px;
+}
+
+.dep-nav {
+  width: 56px; height: 62px; flex: 0 0 auto; background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; position: relative;
+  color: var(--green-light); transition: transform .25s, color .25s;
+}
+.dep-nav::before {
+  content: ""; position: absolute; inset: 0;
+  clip-path: polygon(26% 0, 74% 0, 100% 50%, 74% 100%, 26% 100%, 0 50%);
+  background: linear-gradient(140deg, rgba(57,211,83,.5), rgba(57,211,83,.12));
+}
+.dep-nav::after {
+  content: ""; position: absolute; inset: 1.5px;
+  clip-path: polygon(26% 0, 74% 0, 100% 50%, 74% 100%, 26% 100%, 0 50%);
+  background: #080a0c;
+}
+.dep-nav svg { position: relative; z-index: 1; width: 20px; height: 20px; }
+.dep-nav:hover { transform: scale(1.09); }
+.dep-nav:hover::before { background: linear-gradient(140deg, var(--green-normal), rgba(57,211,83,.4)); }
+.dep-nav:focus-visible { outline: 2px solid var(--green-normal); outline-offset: 4px; }
+
+.dep-viewport { flex: 1 1 auto; max-width: 1180px; overflow: hidden; padding: 34px 0 26px; }
+.dep-track { display: flex; align-items: center; gap: 26px; will-change: transform; transition: transform .62s cubic-bezier(.22,1,.32,1); }
+
+.dep-card {
+  flex: 0 0 340px; padding: 1.5px; clip-path: var(--dep-cut); position: relative;
+  background: linear-gradient(150deg, rgba(57,211,83,.55), rgba(57,211,83,.12));
+  transform: scale(.86); opacity: .5; filter: saturate(.75);
+  transition: transform .62s cubic-bezier(.22,1,.32,1), opacity .5s, filter .5s, background .5s;
+}
+.dep-card__in {
+  clip-path: var(--dep-cut); background: rgba(8,12,10,.95); padding: 26px 26px 24px;
+  min-height: 330px; display: flex; flex-direction: column;
+}
+.dep-card__q { font-family: "Aldrich", sans-serif; font-size: 40px; line-height: .8; color: var(--green-normal); opacity: .85; }
+.dep-card__tx { margin-top: 20px; font-size: 14.5px; color: var(--gray-300); line-height: 1.7; flex: 1 1 auto; }
+.dep-card__who { display: flex; align-items: center; gap: 14px; margin-top: 22px; }
+.dep-card__av {
+  width: 56px; height: 56px; flex: 0 0 auto; padding: 1.4px; border-radius: 8px;
+  background: linear-gradient(140deg, rgba(57,211,83,.8), rgba(57,211,83,.2));
+}
+.dep-card__av img { width: 100%; height: 100%; border-radius: 7px; object-fit: cover; display: block; }
+.dep-card__nm { font-size: 16px; color: var(--white-light); }
+.dep-card__rl { font-size: 13px; color: var(--green-light); margin-top: 3px; }
+
+/* card em destaque */
+.dep-card.is-active {
+  flex: 0 0 452px; transform: scale(1); opacity: 1; filter: none;
+  background: linear-gradient(150deg, rgba(133,50,242,.85), rgba(133,50,242,.22));
+  box-shadow: 0 0 40px rgba(133,50,242,.22);
+}
+.dep-card.is-active .dep-card__in { background: rgba(11,8,16,.96); padding: 32px 32px 28px; min-height: 378px; }
+.dep-card.is-active .dep-card__q { color: var(--purple-light); font-size: 46px; }
+.dep-card.is-active .dep-card__tx { font-size: 16.5px; color: var(--white-normal); }
+.dep-card.is-active .dep-card__av { background: linear-gradient(140deg, rgba(133,50,242,.9), rgba(133,50,242,.25)); }
+.dep-card.is-active .dep-card__nm { font-size: 18px; }
+.dep-card.is-active .dep-card__rl { color: var(--purple-light); font-size: 14px; }
+/* aba superior do card em destaque */
+.dep-card.is-active::before {
+  content: ""; position: absolute; top: -7px; left: 52px; width: 112px; height: 7px;
+  background: linear-gradient(90deg, var(--purple-normal), rgba(133,50,242,.35));
+}
+/* varredura interna */
+.dep-card.is-active::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 120px; top: 0;
+  background: linear-gradient(to bottom, rgba(152,75,255,.13), transparent);
+  animation: dep-sweep 4.5s ease-in-out infinite; pointer-events: none;
+}
+@keyframes dep-sweep { 0%,100% { transform: translateY(-40px); opacity: 0; } 45% { opacity: 1; } 100% { transform: translateY(300px); } }
+
+.dep-flag {
+  position: absolute; top: 26px; right: 26px; z-index: 2; display: flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border-radius: 999px; border: 1.4px solid var(--purple-normal);
+  background: rgba(133,50,242,.12); font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11.5px; letter-spacing: 1.4px; color: var(--purple-light); opacity: 0; transition: opacity .4s;
+}
+.dep-card.is-active .dep-flag { opacity: 1; }
+.dep-flag svg { width: 12px; height: 12px; }
+
+/* ---------- paginação ---------- */
+
+.dep-dots { position: relative; z-index: 4; display: flex; gap: 11px; justify-content: center; margin-top: 18px; }
+.dep-dots button {
+  width: 8px; height: 8px; border-radius: 50%; border: none; padding: 0; cursor: pointer;
+  background: rgba(255,255,255,.16); transition: .3s;
+}
+.dep-dots button.is-on { width: 11px; height: 11px; background: var(--purple-light); box-shadow: 0 0 12px rgba(152,75,255,.8); }
+.dep-dots button:focus-visible { outline: 2px solid var(--green-normal); outline-offset: 3px; }
+
+/* ---------- responsivo ---------- */
+
+@media (max-width: 1100px) {
+  .dep-card { flex: 0 0 300px; }
+  .dep-card.is-active { flex: 0 0 360px; }
+}
+@media (max-width: 820px) {
+  .dep { padding: 56px 16px 60px; }
+  .dep-nav { display: none; }
+  .dep-card { flex: 0 0 78vw; transform: scale(.94); opacity: .55; }
+  .dep-card.is-active { flex: 0 0 86vw; }
+  .dep-deco { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dep-track { transition: none; }
+  .dep-card { transition: none; }
+  .dep-card.is-active::after { animation: none; display: none; }
+  .dep-head h2 .dep-cur { animation: none; }
+}

@@ -23,14 +23,15 @@
    apagar a rede nas bordas — um degradê chapado mataria a continuidade.
    Cor alinhada ao --black-dark real do projeto (17,16,18), não ao
    fallback isolado (6,7,9) — evita um tom de preto ligeiramente
-   diferente bem na emenda com o hero, que usa o mesmo token.
-   A camada linear no topo espelha o fade de saída do hero: as duas redes
-   desaparecem no mesmo preto sólido perto da emenda, em vez de trocar de
-   densidade/opacidade de repente. */
+   diferente bem na emenda com as seções vizinhas.
+   As camadas lineares no topo e no fim espelham o fade de saída do hero
+   e o fade de entrada de depoimentos: as redes das três seções
+   desaparecem no mesmo preto sólido perto de cada emenda, em vez de
+   trocar de densidade/opacidade de repente. */
 .stx-veil {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background:
-    linear-gradient(to bottom, rgba(17,16,18,1) 0%, rgba(17,16,18,0) 12%),
+    linear-gradient(to bottom, rgba(17,16,18,1) 0%, rgba(17,16,18,0) 12%, rgba(17,16,18,0) 85%, rgba(17,16,18,1) 100%),
     radial-gradient(ellipse 62% 66% at 50% 50%,
       rgba(17,16,18,.92) 0%, rgba(17,16,18,.72) 45%, rgba(17,16,18,.35) 78%, rgba(17,16,18,.55) 100%);
 }
