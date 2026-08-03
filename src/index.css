@@ -156,21 +156,6 @@
 }
 
 /* ==============================
-   INDICADOR DE SCROLL DA INTRO
-   Única animação em loop permitida na intro — sem ela o usuário não sabe
-   que precisa rolar e some da página. Some inteira sob reduced-motion
-   porque o componente <Intro> nem chega a montar nesse caso.
-   ============================== */
-@keyframes intro-hint {
-  0%, 100% { transform: translateY(0); opacity: 0.5; }
-  50%      { transform: translateY(10px); opacity: 1; }
-}
-
-.animate-intro-hint {
-  animation: intro-hint 1.8s ease-in-out infinite;
-}
-
-/* ==============================
    BOTÃO PRIMÁRIO: ripple radial no hover
    Só transform (scale) + opacity animam — nunca width/height, que são
    propriedades de layout e forçam reflow. O pseudo-elemento já nasce no

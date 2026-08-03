@@ -1,86 +1,117 @@
 import { useLayoutEffect, useRef } from 'react';
-import { gsap, SplitText } from '../../lib/gsap';
-import { EASE, STAGGER, DISTANCE } from '../../lib/motion';
+import { gsap } from '../../lib/gsap';
+import { DURATION, EASE } from '../../lib/motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
-import { Logo } from '../ui/Logo';
 
 const MAX_FONT_WAIT_MS = 1500;
+const MATRIX_HOLD_MS = 5000;
+const FONT_SIZE = 18;
+
+// Mesmos tokens de --green-normal/--green-light/--purple-light em RGB —
+// canvas não lê custom property CSS diretamente, por isso o valor cru aqui.
+const GREEN_NORMAL: [number, number, number] = [57, 211, 83];
+const GREEN_LIGHT: [number, number, number] = [91, 241, 117];
+const PURPLE_LIGHT: [number, number, number] = [152, 75, 255];
+const CHARS = '01{}<>/;:=+*#$%ABCDEFXYZ';
 
 /**
- * Intro cinematográfica: roda em TODO carregamento/recarregamento de
- * página, só desligada por `prefers-reduced-motion`. A Fase B NÃO é mais
- * amarrada a uma posição de scroll (scrub) — ela dispara uma única vez no
- * primeiro gesto de rolagem/toque/tecla do usuário e toca como uma
- * animação de duração fixa. É essa mudança que garante que a intro nunca
- * "volte": não existe mais nenhum vínculo scroll-progresso↔timeline pra
- * rolar pra trás. `overflow:hidden` no body cobre a espera pelo gesto +
- * a própria Fase B inteira, então quando ela libera o scroll o documento
- * já está exatamente no topo — sem spacer nenhum reservando distância de
- * rolagem (o que também elimina de raiz a classe de bug de "espaço morto"
- * que a versão anterior (spacer + scrub) podia introduzir).
+ * Intro cinematográfica: chuva de código estilo Matrix cobrindo a tela
+ * inteira, com "DevClub" em destaque no centro. Roda em TODO carregamento
+ * de página, só desligada por `prefers-reduced-motion`. Dura ~5s
+ * (MATRIX_HOLD_MS) e então revela o site com o mesmo crossfade de sempre
+ * (overlay e site se dissolvem em paralelo, não um corte seco).
  *
- * Ao carregar, só o logo (módulos se montando em ordem aleatória —
- * materialização, não barra de progresso) e o wordmark abaixo dele. No
- * primeiro scroll/toque/tecla, uma única camada de profundidade: o logo
- * recua (escala para baixo + blur, nunca para cima — "câmera atravessando"
- * seria enérgico mas desorientador) enquanto o site emerge por trás.
+ * O texto central não precisa de nenhuma lógica de "buraco" no algoritmo
+ * da chuva: o wrapper ao redor dele tem um fundo em radial-gradient (mesma
+ * técnica de vinheta do Hero/Stacks) do tamanho do próprio texto+padding
+ * — cresce e encolhe com o texto automaticamente em qualquer breakpoint,
+ * em vez de uma área fixa em % de viewport que desalinharia em telas
+ * muito estreitas ou muito largas.
  */
 export function Intro() {
   const reducedMotion = useReducedMotion();
   const introRef = useRef<HTMLDivElement | null>(null);
-  const logoRef = useRef<SVGSVGElement | null>(null);
-  const wordRef = useRef<HTMLDivElement | null>(null);
-  const hintRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const wordRef = useRef<HTMLSpanElement | null>(null);
 
   useLayoutEffect(() => {
     if (reducedMotion) return;
 
     const intro = introRef.current;
-    const logoSvg = logoRef.current;
+    const canvas = canvasRef.current;
     const wordEl = wordRef.current;
-    const hintEl = hintRef.current;
-    if (!intro || !logoSvg || !wordEl || !hintEl) return;
+    if (!intro || !canvas || !wordEl) return;
 
-    const isMobile = window.matchMedia('(max-width: 767px)').matches;
-    const rects = logoSvg.querySelectorAll('rect');
+    const canvasCtx = canvas.getContext('2d');
+    if (!canvasCtx) return;
 
-    let phaseBTween: gsap.core.Timeline | null = null;
-    let split: SplitText | null = null;
     let cancelled = false;
-    let phaseBStarted = false;
+    let raf = 0;
+    let holdTimeout = 0;
+    let revealTween: gsap.core.Timeline | null = null;
+    let width = 0;
+    let height = 0;
+    let columns = 0;
+    let drops: number[] = [];
 
-    // Estado inicial escondido, aplicado de forma síncrona (useLayoutEffect,
-    // antes do primeiro paint) — sem isto haveria um frame com tudo visível
-    // antes do gate de fontes resolver.
-    gsap.set(rects, { scale: 0, opacity: 0, transformOrigin: 'center' });
-    gsap.set(wordEl, { opacity: 0 });
-    gsap.set(hintEl, { opacity: 0, y: DISTANCE.sm });
+    // Escondido de forma síncrona (useLayoutEffect, antes do primeiro
+    // paint) — sem isto haveria um frame com o texto visível na fonte de
+    // fallback antes do gate de fontes resolver.
+    gsap.set(wordEl, { opacity: 0, scale: 0.92 });
 
     // Trava o scroll real assim que a intro monta — libera só quando a
-    // Fase B (disparada pelo gesto do usuário) terminar. Sem isso o
-    // usuário poderia rolar o site de verdade por baixo do overlay antes
-    // mesmo da Fase A terminar.
+    // revelação do site terminar.
     document.body.style.overflow = 'hidden';
 
-    const onGesture = () => runPhaseB();
-    const onKeyGesture = (event: KeyboardEvent) => {
-      if ([' ', 'ArrowDown', 'PageDown', 'Enter'].includes(event.key)) runPhaseB();
+    const resize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      canvasCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      columns = Math.ceil(width / FONT_SIZE);
+      // Início espalhado (negativo e aleatório): sem isso todas as colunas
+      // nasceriam alinhadas no topo e cairiam em uníssono.
+      drops = Array.from({ length: columns }, () => Math.random() * -40);
     };
 
-    const removeGestureListeners = () => {
-      window.removeEventListener('wheel', onGesture);
-      window.removeEventListener('touchstart', onGesture);
-      window.removeEventListener('keydown', onKeyGesture);
+    const pickColor = () => {
+      const roll = Math.random();
+      if (roll > 0.97) return 'rgb(255,255,255)';
+      if (roll > 0.9) return `rgb(${PURPLE_LIGHT.join(',')})`;
+      if (roll > 0.5) return `rgb(${GREEN_LIGHT.join(',')})`;
+      return `rgb(${GREEN_NORMAL.join(',')})`;
     };
 
-    // Fase B: dispara uma única vez (primeiro gesto), toca como timeline
-    // de duração fixa — não redesenha em função de scroll, então não tem
-    // como "voltar" rolando pra cima depois de terminar.
-    const runPhaseB = () => {
-      if (cancelled || phaseBStarted) return;
-      phaseBStarted = true;
-      removeGestureListeners();
+    // Chuva de código clássica: em vez de limpar o canvas a cada frame, um
+    // retângulo preto quase opaco cria o rastro (os caracteres da rodada
+    // anterior desbotam aos poucos); cada coluna solta um caractere novo
+    // na "cabeça" e avança, reiniciando aleatoriamente ao sair da tela.
+    const tick = () => {
+      canvasCtx.fillStyle = 'rgba(17, 16, 18, 0.085)';
+      canvasCtx.fillRect(0, 0, width, height);
+      canvasCtx.font = `${FONT_SIZE}px "JetBrains Mono", ui-monospace, monospace`;
+      canvasCtx.textBaseline = 'top';
 
+      for (let i = 0; i < columns; i++) {
+        const char = CHARS[Math.floor(Math.random() * CHARS.length)];
+        const x = i * FONT_SIZE;
+        const y = drops[i] * FONT_SIZE;
+        canvasCtx.fillStyle = pickColor();
+        canvasCtx.fillText(char, x, y);
+        drops[i] += 1;
+        if (y > height && Math.random() > 0.975) drops[i] = 0;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    // Revelação: site emerge enquanto o overlay se dissolve em paralelo
+    // (não um corte seco) — mesmo crossfade já validado nesta intro.
+    const revealSite = () => {
+      if (cancelled) return;
       const site = document.getElementById('site');
       const navLogo = document.getElementById('nav-logo-icon');
 
@@ -88,16 +119,11 @@ export function Intro() {
         defaults: { ease: EASE.out },
         onComplete: () => {
           document.body.style.overflow = '';
+          cancelAnimationFrame(raf);
         },
       });
 
-      tl.to(hintEl, { opacity: 0, y: DISTANCE.sm, duration: 0.2 }, 0);
-      tl.to(wordEl, { opacity: 0, y: -DISTANCE.md, duration: 0.35 }, 0);
-      tl.to(
-        logoSvg,
-        { scale: 0.28, opacity: 0, filter: isMobile ? 'none' : 'blur(6px)', duration: 0.65 },
-        0.05
-      );
+      tl.to(wordEl, { opacity: 0, scale: 1.05, duration: 0.5 }, 0);
       if (site) {
         tl.fromTo(
           site,
@@ -110,92 +136,42 @@ export function Intro() {
             // Sem isso o GSAP deixa `transform: matrix(...)` (mesmo em
             // identidade) como inline style pro resto da sessão — qualquer
             // valor de transform diferente de "none" vira containing block
-            // pra descendentes position:fixed, e o Navbar (fixed, dentro de
-            // #site) passaria a "rolar junto" com a página em vez de ficar
-            // travado no viewport.
+            // pra descendentes position:fixed, e o Navbar (fixed, dentro
+            // de #site) passaria a "rolar junto" com a página em vez de
+            // ficar travado no viewport.
             clearProps: 'transform',
           },
-          0.15
+          0.1
         );
       }
       if (navLogo) {
-        tl.fromTo(navLogo, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.35);
+        tl.fromTo(navLogo, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.3);
       }
-      // O overlay começa a sumir quase junto com o site emergindo (0.2, não
-      // lá no fim) — as duas animações correm em paralelo por quase toda a
-      // duração, então o site "atravessa" o overlay conforme ele se
-      // dissolve, em vez de ficar escondido atrás de um preto sólido até um
-      // corte seco no fim.
-      tl.to(intro, { opacity: 0, duration: 0.7 }, 0.2);
+      tl.to(intro, { opacity: 0, duration: 0.7 }, 0.15);
 
-      phaseBTween = tl;
+      revealTween = tl;
     };
 
-    const runPhaseA = () => {
+    const startMatrix = () => {
       if (cancelled) return;
-
-      split = new SplitText(wordEl, { type: 'lines,chars', linesClass: 'line-mask' });
-      gsap.set(split.chars, { yPercent: 110, opacity: 0 });
-      gsap.set(wordEl, { opacity: 1 });
-
-      const tl = gsap.timeline({
-        onComplete: () => {
-          // Só a partir daqui o primeiro gesto do usuário pode revelar o
-          // site — antes disso, rolar/tocar não faz nada.
-          window.addEventListener('wheel', onGesture, { passive: true });
-          window.addEventListener('touchstart', onGesture, { passive: true });
-          window.addEventListener('keydown', onKeyGesture);
-        },
-      });
-
-      // Orçamento de duração da Fase A: ≤1.6s desktop / ≤1.1s mobile
-      // (critério de aceite) — cada etapa abaixo foi somada à mão para
-      // garantir que a timeline inteira (rects + wordmark + hint, com as
-      // sobreposições) nunca estoure esse teto.
-      const rectDuration = isMobile ? 0.3 : 0.4;
-      const rectStagger = isMobile ? 0.006 : STAGGER.modules;
-      const wordDuration = isMobile ? 0.45 : 0.6;
-      const wordStagger = isMobile ? 0.02 : 0.025;
-      const hintDuration = isMobile ? 0.3 : 0.4;
-
-      // 1. Os 48 módulos se montam em ordem aleatória — materialização do
-      // glifo, não leitura de progresso (from:"start" leria como
-      // carregamento sequencial).
-      tl.to(rects, {
-        scale: 1,
-        opacity: 1,
-        duration: rectDuration,
-        ease: EASE.back,
-        stagger: { each: rectStagger, from: 'random' },
-      });
-
-      // 2. Wordmark revela por caracteres com máscara — sobreposto ao fim
-      // da montagem do logo pra não sentir como fila.
-      tl.to(
-        split.chars,
-        {
-          yPercent: 0,
-          opacity: 1,
-          duration: wordDuration,
-          ease: EASE.expo,
-          stagger: wordStagger,
-        },
-        isMobile ? '-=0.2' : '-=0.35'
-      );
-
-      // 3. Indicador de scroll.
-      tl.to(hintEl, { opacity: 1, y: 0, duration: hintDuration, ease: EASE.out }, isMobile ? '-=0.15' : '-=0.25');
+      resize();
+      tick();
+      gsap.to(wordEl, { opacity: 1, scale: 1, duration: DURATION.reveal, delay: 0.3, ease: EASE.out });
+      holdTimeout = window.setTimeout(revealSite, MATRIX_HOLD_MS);
     };
+
+    window.addEventListener('resize', resize);
 
     const timeout = new Promise<void>((resolve) => window.setTimeout(resolve, MAX_FONT_WAIT_MS));
-    Promise.race([document.fonts.ready.then(() => undefined), timeout]).then(runPhaseA);
+    Promise.race([document.fonts.ready.then(() => undefined), timeout]).then(startMatrix);
 
     return () => {
       cancelled = true;
       document.body.style.overflow = '';
-      removeGestureListeners();
-      phaseBTween?.kill();
-      split?.revert();
+      window.removeEventListener('resize', resize);
+      window.clearTimeout(holdTimeout);
+      cancelAnimationFrame(raf);
+      revealTween?.kill();
     };
   }, [reducedMotion]);
 
@@ -205,18 +181,24 @@ export function Intro() {
     <div
       ref={introRef}
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-[100] flex flex-col items-center justify-center gap-6 bg-black-dark"
+      className="pointer-events-none fixed inset-0 z-[100] bg-black-dark"
     >
-      <div className="flex flex-col items-center gap-6">
-        <Logo ref={logoRef} size={200} color="green" />
-        <div ref={wordRef} className="overflow-hidden">
-          <span className="font-display font-normal text-3xl sm:text-4xl text-white">DevClub</span>
+      <canvas ref={canvasRef} className="absolute inset-0" />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div
+          className="relative px-16 py-10 sm:px-24 sm:py-14"
+          style={{
+            background:
+              'radial-gradient(ellipse 60% 60% at 50% 50%, var(--black-dark) 0%, var(--black-dark) 62%, transparent 100%)',
+          }}
+        >
+          <span
+            ref={wordRef}
+            className="relative block font-display font-normal text-white text-[clamp(2.75rem,9vw,7rem)] tracking-wide"
+          >
+            DevClub
+          </span>
         </div>
-      </div>
-
-      <div ref={hintRef} className="absolute bottom-10 flex flex-col items-center gap-2 text-gray-300">
-        <span className="font-mono text-xs uppercase tracking-widest">role para entrar_</span>
-        <span className="h-6 w-px bg-green-normal animate-intro-hint" aria-hidden="true" />
       </div>
     </div>
   );
