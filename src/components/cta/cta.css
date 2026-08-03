@@ -1,0 +1,88 @@
+/**
+ * Estilos específicos da seção CTA final — só o que o Tailwind não cobre
+ * bem (clip-path octogonal, keyframes). O resto do layout usa classes
+ * utilitárias do Tailwind, como o resto do site. Prefixo cta- para não
+ * colidir com o resto do projeto.
+ */
+
+.cta {
+  --cta-oct: polygon(16px 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px),
+                     calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px), 0 16px);
+  background-color: var(--black-dark);
+}
+
+.cta-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+
+/* Véu radial: escurece o centro sem apagar a rede nas bordas. As camadas
+   lineares no topo e no fim fundem com o fade de saída de Mentores (esta
+   é a última seção antes do rodapé, então só precisa da borda de cima). */
+.cta-veil {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(17,16,18,1) 0%, rgba(17,16,18,0) 12%),
+    radial-gradient(ellipse 72% 66% at 50% 50%,
+      rgba(17,16,18,.88) 0%, rgba(17,16,18,.62) 50%, rgba(17,16,18,.3) 82%, rgba(17,16,18,.55) 100%);
+}
+
+/* Dois halos "respirando" — verde e roxo, fora do centro. */
+.cta-glow {
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 1;
+  animation: cta-breathe 6s ease-in-out infinite;
+}
+.cta-glow--green {
+  width: 520px; height: 520px; left: -4%; top: 14%;
+  background: radial-gradient(circle, rgba(57,211,83,.14), transparent 70%);
+}
+.cta-glow--purple {
+  width: 460px; height: 460px; right: -2%; bottom: 8%; animation-delay: 2.5s;
+  background: radial-gradient(circle, rgba(133,50,242,.14), transparent 70%);
+}
+@keyframes cta-breathe {
+  0%, 100% { opacity: .55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
+
+/* Card de oferta: borda em gradiente (padding + fundo por baixo, mesma
+   técnica do Stacks/Mentores) com brilho pulsando. */
+.cta-offer {
+  clip-path: var(--cta-oct);
+  background: linear-gradient(155deg, rgba(57,211,83,.9), rgba(133,50,242,.6), rgba(57,211,83,.35));
+  animation: cta-offer-glow 5s ease-in-out infinite;
+}
+@keyframes cta-offer-glow {
+  0%, 100% { filter: drop-shadow(0 0 24px rgba(57,211,83,.18)); }
+  50% { filter: drop-shadow(0 0 40px rgba(57,211,83,.34)); }
+}
+.cta-offer__in { clip-path: var(--cta-oct); background: rgba(11,10,12,.97); position: relative; overflow: hidden; }
+.cta-offer__in::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 110px; top: 0; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(57,211,83,.10), transparent);
+  animation: cta-sweep 6s ease-in-out infinite;
+}
+@keyframes cta-sweep {
+  0% { transform: translateY(-110px); opacity: 0; }
+  35% { opacity: 1; }
+  100% { transform: translateY(560px); opacity: 0; }
+}
+
+/* Benefícios: entram com stagger (delay por item via inline style) quando
+   a seção entra em viewport. */
+.cta-ben { opacity: 0; transform: translateY(10px); transition: opacity .5s ease, transform .5s cubic-bezier(.22,1,.32,1); }
+.cta-ben.is-in { opacity: 1; transform: none; }
+
+/* Barra de vagas preenchidas. */
+.cta-seats-bar { transition: width 1.6s cubic-bezier(.22,1,.32,1); }
+
+/* Pulso de convite no botão principal — desliga no hover (a transição de
+   lift/shadow já embutida no <ButtonPrimary> assume) e em reduced-motion. */
+.cta-btn-pulse { animation: cta-btn-pulse 2.8s ease-in-out infinite; }
+.cta-btn-pulse:hover { animation: none; }
+@keyframes cta-btn-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(57,211,83,.34); }
+  50% { box-shadow: 0 0 0 12px rgba(57,211,83,0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-glow, .cta-offer, .cta-offer__in::after, .cta-btn-pulse { animation: none; }
+  .cta-ben { opacity: 1; transform: none; }
+}

@@ -5,7 +5,7 @@ import Stacks from './components/stacks/Stacks';
 import Depoimentos from './components/depoimentos/Depoimentos';
 import Mentores from './components/mentores/Mentores';
 import Empresas from './components/empresas/Empresas';
-import { CTAFinal } from './components/devclub/CTAFinal';
+import { CTAFinal } from './components/cta/CTAFinal';
 import { NetworkBackground } from './components/devclub/NetworkBackground';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { Intro } from './components/devclub/Intro';
