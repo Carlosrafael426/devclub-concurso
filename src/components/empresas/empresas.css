@@ -61,6 +61,15 @@
   position: absolute; z-index: 7; transform: translate(-50%, -50%); cursor: pointer;
   border: none; background: none; padding: 0;
 }
+/* Um z-index no próprio balão não basta: ele é filho de .emp-co, que já
+   cria seu próprio contexto de empilhamento (position:absolute + z-index)
+   — o balão nunca escapa por cima de um NÓ VIZINHO com esse mesmo
+   z-index:7, só por cima de outros elementos dentro do próprio .emp-co.
+   Por isso o node inteiro (não só o balão) sobe de camada no hover/foco,
+   garantindo que o balão sempre fique por cima de qualquer vizinho. */
+.emp-co:hover, .emp-co:focus-visible {
+  z-index: 20;
+}
 .emp-co__b {
   border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
   border: 1.5px solid; backdrop-filter: blur(4px); gap: 3px;
