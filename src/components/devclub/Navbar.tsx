@@ -8,7 +8,7 @@ import { Logo } from '../ui/Logo';
 const NAV_SECTIONS = [
   { id: 'stacks', label: 'Stacks' },
   { id: 'depoimentos', label: 'Depoimentos' },
-  { id: 'equipe', label: 'Equipe' },
+  { id: 'mentores', label: 'Mentores' },
 ];
 
 /**
@@ -144,11 +144,11 @@ export const Navbar: React.FC = () => {
             Depoimentos
           </a>
           <a
-            href="#equipe"
+            href="#mentores"
             onClick={() => setIsOpen(false)}
             className="font-sans font-medium text-lg text-gray-300 hover:text-green-normal transition-colors"
           >
-            Equipe
+            Mentores
           </a>
           <ButtonPrimary href="#inscricao" className="w-full justify-center" onClick={() => setIsOpen(false)}>
             Quero ser dev

@@ -3,7 +3,7 @@ import { Navbar } from './components/devclub/Navbar';
 import Hero from './components/hero/Hero';
 import Stacks from './components/stacks/Stacks';
 import Depoimentos from './components/depoimentos/Depoimentos';
-import { Equipe } from './components/devclub/Equipe';
+import Mentores from './components/mentores/Mentores';
 import Empresas from './components/empresas/Empresas';
 import { CTAFinal } from './components/devclub/CTAFinal';
 import { NetworkBackground } from './components/devclub/NetworkBackground';
@@ -52,7 +52,7 @@ function App() {
           <Stacks />
           <Depoimentos />
           <Empresas />
-          <Equipe />
+          <Mentores />
         </main>
 
         <CTAFinal />
