@@ -21,12 +21,8 @@ const CHARS = '01{}<>/;:=+*#$%ABCDEFXYZ';
  * (MATRIX_HOLD_MS) e então revela o site com o mesmo crossfade de sempre
  * (overlay e site se dissolvem em paralelo, não um corte seco).
  *
- * O texto central não precisa de nenhuma lógica de "buraco" no algoritmo
- * da chuva: o wrapper ao redor dele tem um fundo em radial-gradient (mesma
- * técnica de vinheta do Hero/Stacks) do tamanho do próprio texto+padding
- * — cresce e encolhe com o texto automaticamente em qualquer breakpoint,
- * em vez de uma área fixa em % de viewport que desalinharia em telas
- * muito estreitas ou muito largas.
+ * O texto central fica sobre a chuva sem nenhum fundo próprio — a matrix
+ * passa livremente atrás das letras, sem vinheta/sombra separando as duas.
  */
 export function Intro() {
   const reducedMotion = useReducedMotion();
@@ -185,13 +181,7 @@ export function Intro() {
     >
       <canvas ref={canvasRef} className="absolute inset-0" />
       <div className="absolute inset-0 flex items-center justify-center">
-        <div
-          className="relative px-16 py-10 sm:px-24 sm:py-14"
-          style={{
-            background:
-              'radial-gradient(ellipse 60% 60% at 50% 50%, var(--black-dark) 0%, var(--black-dark) 62%, transparent 100%)',
-          }}
-        >
+        <div className="relative px-16 py-10 sm:px-24 sm:py-14">
           <span
             ref={wordRef}
             className="relative block font-display font-normal text-white text-[clamp(2.75rem,9vw,7rem)] tracking-wide"
