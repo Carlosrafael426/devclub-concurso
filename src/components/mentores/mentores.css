@@ -68,28 +68,28 @@
   clip-path: var(--mtr-oct); background: rgba(6,10,8,.94); padding: 12px 15px;
   font-family: "JetBrains Mono", ui-monospace, monospace;
 }
-.mtr-hud__t { font-size: 11px; letter-spacing: .7px; color: var(--gray-600); }
+.mtr-hud__t { font-size: 11px; letter-spacing: .7px; color: var(--gray-600); white-space: nowrap; }
 .mtr-hud__d { font-size: 10.5px; color: var(--gray-300); line-height: 1.6; margin-top: 7px; }
-.mtr-hud__dots { display: flex; gap: 4px; margin-top: 9px; }
+.mtr-hud__dots { display: flex; gap: 7px; margin-top: 10px; }
 .mtr-hud__dots i {
-  width: 3.5px; height: 3.5px; border-radius: 50%;
+  width: 5px; height: 5px; border-radius: 50%;
   background: var(--green-normal); opacity: .5;
   animation: mtr-pulse 1.8s ease-in-out infinite;
 }
 .mtr-hud__dots i:nth-child(2n) { animation-delay: .5s; }
 .mtr-hud__stat-row {
-  display: flex; align-items: center; justify-content: space-between; gap: 18px;
-  font-size: 10.5px; padding: 4px 0;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  font-size: 10.5px; padding: 4px 0; white-space: nowrap;
 }
 .mtr-hud__stat-row + .mtr-hud__stat-row { border-top: 1px solid rgba(255,255,255,.06); }
 .mtr-hud__t + .mtr-hud__stat-row { margin-top: 8px; }
 .mtr-hud__stat-row span { color: var(--gray-600); letter-spacing: .4px; }
 .mtr-hud__stat-row b { color: var(--green-light); font-weight: 500; }
 
-.mtr-hud--tl { top: 24px; left: 24px; width: 208px; }
+.mtr-hud--tl { top: 24px; left: 24px; width: 226px; }
 .mtr-hud--tr { top: 24px; right: 24px; }
 .mtr-hud--tr .mtr-hud__in { padding: 10px 15px; }
-.mtr-hud--bl { bottom: 28px; left: 24px; width: 208px; }
+.mtr-hud--bl { bottom: 28px; left: 24px; width: 226px; }
 
 .mtr-hud--br {
   bottom: 28px; right: 24px; cursor: pointer;
@@ -160,7 +160,7 @@
 .mtr-card[data-slot="1"] { left: 78%; top: 18%; }
 .mtr-card[data-slot="2"] { left: 9%;  top: 55%; }
 .mtr-card[data-slot="3"] { left: 91%; top: 55%; }
-.mtr-card[data-slot="4"] { left: 50%; top: 86%; }
+.mtr-card[data-slot="4"] { left: 50%; top: 80%; }
 
 .mtr-card__in { clip-path: var(--mtr-cut); background: rgba(7,10,9,.96); padding: 0 0 14px; }
 
@@ -226,7 +226,7 @@
 
 /* ---------- pontos decorativos ---------- */
 
-.mtr-dots { position: relative; z-index: 5; display: flex; justify-content: center; gap: 9px; margin-top: 8px; }
+.mtr-dots { position: relative; z-index: 5; display: flex; justify-content: center; gap: 9px; margin-top: 34px; }
 .mtr-dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--gray-600); opacity: .5; transition: .3s; }
 .mtr-dots span.is-on { width: 9px; height: 9px; background: var(--green-normal); opacity: 1; box-shadow: 0 0 10px rgba(57,211,83,.7); }
 
