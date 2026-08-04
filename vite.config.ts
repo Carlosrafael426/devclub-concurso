@@ -3,5 +3,9 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/devclub-concurso/',
   plugins: [react()],
+  build: {
+    outDir: 'docs'
+  }
 })
