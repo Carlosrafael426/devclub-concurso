@@ -150,8 +150,6 @@ export class BgNeural {
     if (this.running) this.raf = requestAnimationFrame(this._frame);
   };
 
-  setAlpha(a) { this.alpha = clamp(0, 1, a); }
-
   start() {
     if (this.running) return;
     this.running = true;
